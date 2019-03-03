@@ -11,7 +11,7 @@
 			></el-input>
 			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
 		</div>
-		<el-table :data="dataSource" stripe style="width: 100%"> 
+		<el-table :data="priamryList" stripe style="width: 100%"> 
 	    <el-table-column prop="name" label="姓名" align="center">
 	    </el-table-column>
 	    <el-table-column prop="age" label="年龄" align="center">
@@ -42,18 +42,18 @@
 	    </el-table-column>
 		</el-table>
 		<el-dialog :title="dialogTitle" :visible.sync="formVisible">
-		  <el-form :model="form" :rules="rules" ref="form">
+		  <el-form :model="primaryForm" :rules="rules" ref="primaryForm">
 		    <el-form-item label="姓名:" prop="name" :label-width="formLabelWidth">
 	    	 	<el-col :span="14">
 						<el-input 
-							v-model="form.name" 
+							v-model="primaryForm.name" 
 							autocomplete="off" 
-							:disabled="this.form.name && this.form.id ? true : false"
+							:disabled="this.primaryForm.name && this.primaryForm.id ? true : false"
 						></el-input>
 					</el-col>
 				</el-form-item>
 		   	<el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
-				    <el-radio-group v-model="form.gender">
+				    <el-radio-group v-model="primaryForm.gender">
 				      <el-radio label="男"></el-radio>
 				      <el-radio label="女"></el-radio>
 				    </el-radio-group>
@@ -63,7 +63,7 @@
 	        	<el-date-picker 
 	         		type="date" 
 	         		placeholder="选择日期"
-	         		v-model="form.birth"
+	         		v-model="primaryForm.birth"
 	         		style="width: 100%;"
          		>
 	        	</el-date-picker>
@@ -71,7 +71,7 @@
 		    </el-form-item>
 		    <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
 					<el-col :span="14">
-						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
+						<el-select v-model="primaryForm.relationship" placeholder="请选择" style="width: 100%;">
 		        	<el-option label='好友' value='friend'></el-option>
             	<el-option label='普通' value='normal'></el-option>
 			    	</el-select>
@@ -80,7 +80,7 @@
 		  </el-form>
 		  <div slot="footer" class="dialog-footer">
         <el-button @click="handleCancleDialog">取 消</el-button>
-        <el-button type="success" @click="verifySaveData('form')">保 存</el-button>
+        <el-button type="success" @click="verifySaveData('primaryForm')">保 存</el-button>
 		  </div>
 		</el-dialog>
 	</div>
@@ -93,18 +93,11 @@ import moment from 'moment';
 export default {
 	data() {
 		return {
-		 	dataSource: [{
-		 		id: '1001',
-		 		name: 'test',
-		 		age: 16,
-		 		gender: '男',
-		 		birth: '2014-01-23',
-		 		relationship: 'normal'
-		 	}], //表格数据源
+		 	dataSource: [], //表格数据源
 		 	search: '',  //查询字符串
 		 	dialogTitle: '新增同学信息',  //模态框标题
 		 	formVisible: false, // 模态框可见
-		 	form: {}, //表单数据
+		 	primaryForm: {}, //表单数据
       formLabelWidth: "100px",
       rules: {
       	name: [
@@ -123,26 +116,32 @@ export default {
 		}
 	},
 	computed: {
-    // ...mapGetters(['primarys']),
-   // 	priamryList() {
- 	 //    const that = this;
-			// return this.primarys.filter(function(item){
-			// 	if(item.name){
-			// 		return item.name.indexOf(that.search) !== -1;
-			// 	}	else return false;
-			// });
-   //  }
+    ...mapGetters(['primarys']),
+   	priamryList() {
+ 	    const that = this;
+			return this.primarys &&
+        this.primarys.filter(function(item){
+				  if(item.name){
+					 return item.name.indexOf(that.search) !== -1;
+				  }	else return false;
+			  });
+    }
 	},
 	created() {
-		// this.findAllPriamrysData()
-		//   .then(data => {})
-		//   .catch(err => {})
+		this.findAllPriamryData()
+		  .then(data => {})
+		  .catch(err => {
+        this.$message.error({
+          title: '获取数据失败',
+          message: err
+        })
+      })
 	},
 	methods: {
-		...mapActions(['findAllPriamrysData','saveOrEditPrimaryData']),
+		...mapActions(['findAllPriamryData','savePrimaryData','updatePrimaryData']),
     //打开新增模态框
 		openDialogToAdd() {
-		 	this.form = {
+		 	this.primaryForm = {
 		 	  gender: '男',
 		 	  relationship: 'normal',
 		 	};
@@ -157,34 +156,37 @@ export default {
         if (valid) {
         	let messageValue = '';
         	let handleMethod = null;
-        	if(that.form.id) {
+        	if(that.primaryForm.id) {
         		//edit
         		messageValue = '修改数据成功';
+            handleMethod = this.updatePrimaryData;
         	} else {
         		//add
         		messageValue = '新增数据成功';
-        		//获取当前数据出生年与当前年计算年龄
-        		that.form.birth = moment(that.form.birth).format('YYYY-MM-DD');
-            let year = parseFloat(new Date().getFullYear());
-        		let age = year - parseFloat(String(that.form.birth).split('-')[0]);
-        		that.form.age = age;
+            handleMethod = this.savePrimaryData;
         	}
-        	return;
-        	that.saveOrEditPrimaryData(that.form)
+          //获取当前数据出生年与当前年计算年龄
+          that.primaryForm.birth = moment(that.primaryForm.birth).format('YYYY-MM-DD');
+          let year = parseFloat(new Date().getFullYear());
+          let age = year - parseFloat(String(that.primaryForm.birth).split('-')[0]);
+          that.primaryForm.age = age;
+        	handleMethod && handleMethod(that.primaryForm)
         	  .then(res => {
         	  	that.$notify({
 			           	title: '成功',
 			           	message: messageValue,
 			           	type: 'success'
 		        	});
-		        	that.findAllPriamrysData();
+		        	that.findAllPriamryData();
+              that.primaryForm = {};
 		        	that.formVisible = false;
         	  })
         	  .catch(err => {
-        	  	that,$notify.error({
+        	  	that.$notify.error({
         	  		title: '失败',
-        	  		message: err
+        	  		message: err.message
         	  	});
+              that.primaryForm = {};
         	  	that.formVisible = false;
         	  });
         } else {
@@ -199,13 +201,13 @@ export default {
 		//打开修改模态框
 		handleEdit(index,row) {
 			this.dialogTitle = '修改同学信息';
-			this.form = JSON.parse(JSON.stringify(row));
+			this.primaryForm = JSON.parse(JSON.stringify(row));
 			this.formVisible = true;
 		},
 		//关闭模态框
 		handleCancleDialog() {
 			this.formVisible = false;
-			this.form = {};
+			this.primaryForm = {};
 		}
 	}
 }

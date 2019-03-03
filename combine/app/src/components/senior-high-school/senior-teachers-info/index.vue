@@ -11,26 +11,30 @@
         <el-option label='男' value="男"></el-option>
         <el-option label='女' value="女"></el-option>
       </el-select>
-			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+			<el-button  type="primary" round @click="openDialogToAdd">新 增</el-button>
 		</div>
-		<el-table :data="dataSource" v-loading="loading" stripe style="width: 100%"> 
+		<el-table 
+      :data="dataSource" 
+      v-loading="loading" 
+      stripe 
+      style="width: 100%" 
+      border
+    > 
 	    <el-table-column prop="name" label="姓名" align="center">
 	    </el-table-column>
 	    <el-table-column prop="age" label="年龄" align="center">
 			</el-table-column>
 			<el-table-column prop="gender" label="性别" align="center">
 	    </el-table-column>
-	    <el-table-column prop="birth" label="出生年月" align="center">
-	    </el-table-column>
-      <el-table-column prop="contactWay" label="QQ号" align="center">
+      <el-table-column prop="phone" label="电话" align="center">
       </el-table-column>
-	    <el-table-column prop="relationship" label="关系" align="center">
+	    <el-table-column prop="subject" label="教学学科" align="center">
 	    	<template slot-scope="scope">
 	    		<el-tag 
-	    			:type="scope.row.relationship !== 'normal' ? 'warning' : (scope.row.relationship === 'normal' ? 'success' : 'info')"
+	    			type='primary'
           	disable-transitions
         	>
-        		{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '厌者')}}
+        		{{scope.row.subject}}
         	</el-tag>
 	    	</template>
 	    </el-table-column>
@@ -38,7 +42,7 @@
 	      <template slot-scope="scope">
 	        <el-button 
 	        	size="mini" 
-	        	type="info" 
+	        	type="text" 
 	        	@click="handleEdit(scope.$index, scope.row)"
         	  icon="el-icon-edit" 
       	  >编辑</el-button>
@@ -61,35 +65,36 @@
 				      <el-radio label="男"></el-radio>
 				      <el-radio label="女"></el-radio>
 				    </el-radio-group>
-				  </el-form-item>
-		    <el-form-item label="出生年月:" prop="birth" :label-width="formLabelWidth">
-		    	<el-col :span="14">
-	        	<el-date-picker 
-	         		type="date" 
-	         		placeholder="选择日期"
-	         		v-model="form.birth"
-	         		style="width: 100%;"
-         		>
-	        	</el-date-picker>
-	      	</el-col>
-		    </el-form-item>
-        <el-form-item label="QQ号:" prop="contactWay" :label-width="formLabelWidth">
+				</el-form-item>
+        <el-form-item label="年龄:" prop="age" :label-width="formLabelWidth">
           <el-col :span="14">
             <el-input 
-              v-model="form.contactWay" 
+              v-model="form.age" 
+              autocomplete="off" 
+              disabled
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="电话:" prop="phone" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.phone" 
               autocomplete="off" 
             ></el-input>
           </el-col>
         </el-form-item>
-		    <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
-					<el-col :span="14">
-						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
-		        	<el-option label='好友' value='friend'></el-option>
-            	<el-option label='普通' value='normal'></el-option>
-              <el-option label='黑名单' value='bore'></el-option>
-			    	</el-select>
-					</el-col>
-		    </el-form-item>
+        <el-form-item label="教学学科" prop="subject" :label-width="formLabelWidth">
+          <el-col :span='14'>
+            <el-select v-model="form.subject" placeholder="请选择" style="width: 100%;">
+              <el-option
+                v-for="item in subjectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-form-item>
 		  </el-form>
 		  <div slot="footer" class="dialog-footer">
         <el-button @click="handleCancleDialog">取 消</el-button>
@@ -112,12 +117,10 @@ export default {
 		 		name: 'test',
 		 		age: 16,
 		 		gender: '男',
-		 		birth: '2014-01-23',
-		 		relationship: 'normal'
 		 	}], //表格数据源
 		 	searchName: '',  //查询字符串
       searchSex: '',
-		 	dialogTitle: '新增同学信息',  //模态框标题
+		 	dialogTitle: '新增教师信息',  //模态框标题
 		 	formVisible: false, // 模态框可见
 		 	form: {}, //表单数据
       formLabelWidth: "100px",
@@ -128,17 +131,44 @@ export default {
         sex: [
           { required: true, message: '请选择', trigger: 'blur' }
         ],
-        birth: [
-          { required: true, message: '请选择', trigger: 'blur' }
+        age: [
+          { pattern: /^[1-9]+[0-9]{1,2}$/, message: '年龄为正整数', trigger: 'blur' }
         ],
-        contactWay: [
-          { type: 'number', message: 'QQ号必须为数字值', trigger: 'blur'},
-          { pattern: /^\d{8,}$/, message: 'QQ号最少八位', trigger: 'blur' }
-        ],
-        relationship: [
-          { required: true, message: '请选择', trigger: 'blur' }
+        phone: [
+          { type: 'number', message: '电话号必须为数字值', trigger: 'blur'},
+          { pattern: /^\d{11}$/, message: '电话号码为十一位数', trigger: 'blur' }
         ]
-      }
+      },
+      subjectOptions: [
+        {
+          value: 'Chinese语文',
+          label: '语文'
+        },{
+          value: 'Math数学',
+          label: '数学'
+        },{
+          value: 'English英语',
+          label: '英语'
+        },{
+          value: 'Physics物理',
+          label: '物理'
+        },{
+          value: 'Chemistry化学',
+          label: '化学'
+        },{
+          value: 'Biology生物',
+          label: '生物'
+        },{
+          value: 'Geography地理',
+          label: '地理'
+        },{
+          value: 'History历史',
+          label: '历史'
+        },{
+          value: 'Politics政治',
+          label: '政治'
+        },
+      ]
 		}
 	},
 	computed: {
@@ -172,9 +202,9 @@ export default {
 		openDialogToAdd() {
 		 	this.form = {
 		 	  gender: '男',
-		 	  relationship: 'normal',
+        age: 0,
 		 	};
-		 	this.dialogTitle = '新增同学信息';
+		 	this.dialogTitle = '新增教师信息';
    	  this.formVisible = true;
 		},
 		//add or edit
@@ -192,11 +222,6 @@ export default {
         		//add
         		messageValue = '新增数据成功';
         	}
-          //获取当前数据出生年与当前年计算年龄
-          that.form.birth = moment(that.form.birth).format('YYYY-MM-DD');
-          let year = parseFloat(new Date().getFullYear());
-          let age = year - parseFloat(String(that.form.birth).split('-')[0]);
-          that.form.age = age;
         	return;
         	that.saveOrEditJuniorOverData(that.form)
         	  .then(res => {
@@ -226,7 +251,7 @@ export default {
 		},
 		//打开修改模态框
 		handleEdit(index,row) {
-			this.dialogTitle = '修改同学信息';
+			this.dialogTitle = '修改教师信息';
 			this.form = JSON.parse(JSON.stringify(row));
 			this.formVisible = true;
 		},

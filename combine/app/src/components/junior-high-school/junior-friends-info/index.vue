@@ -26,13 +26,15 @@
 	    </el-table-column>
 	    <el-table-column prop="birth" label="出生年月" align="center">
 	    </el-table-column>
+      <el-table-column prop="contactWay" label="QQ号" align="center">
+      </el-table-column>
 	    <el-table-column prop="relationship" label="关系" align="center">
 	    	<template slot-scope="scope">
 	    		<el-tag 
-	    			:type="scope.row.relationship !== 'normal' ? 'warning' : 'success'"
+	    			type="warning"
           	disable-transitions
         	>
-        		{{scope.row.relationship === 'normal' ? '普通同学' : '好友'}}
+        		{{'好友'}}
         	</el-tag>
 	    	</template>
 	    </el-table-column>
@@ -40,10 +42,16 @@
 	      <template slot-scope="scope">
 	        <el-button 
 	        	size="mini" 
-	        	type="info" 
+	        	type="text" 
 	        	@click="handleEdit(scope.$index, scope.row)"
         	  icon="el-icon-edit" 
       	  >编辑</el-button>
+          <el-button 
+            size="mini" 
+            type="text" 
+            @click="handleDelete(scope.$index, scope.row)"
+            icon="el-icon-delete" 
+          >删除好友</el-button>
 	      </template>
 	    </el-table-column>
 		</el-table>
@@ -75,11 +83,20 @@
 	        	</el-date-picker>
 	      	</el-col>
 		    </el-form-item>
+        <el-form-item label="QQ号:" prop="contactWay" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.contactWay" 
+              autocomplete="off" 
+            ></el-input>
+          </el-col>
+        </el-form-item>
 		    <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
 					<el-col :span="14">
-						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
+						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;" disabled>
 		        	<el-option label='好友' value='friend'></el-option>
             	<el-option label='普通' value='normal'></el-option>
+              <el-option label='黑名单' value='bore'></el-option>
 			    	</el-select>
 					</el-col>
 		    </el-form-item>
@@ -89,6 +106,17 @@
         <el-button type="success" @click="verifySaveData('form')">保 存</el-button>
 		  </div>
 		</el-dialog>
+    <el-dialog
+      title="提示"
+      :visible.sync="tipVisible"
+      width="30%"
+    >
+      <span>您确定要删除该好友吗？如果是,您们之间的关系将变为普通同学</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancleChangeDialog">取 消</el-button>
+        <el-button type="primary" @click="confirmToChangeRel">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -106,7 +134,7 @@ export default {
 		 		age: 16,
 		 		gender: '男',
 		 		birth: '2014-01-23',
-		 		relationship: 'normal'
+		 		relationship: 'friend'
 		 	}], //表格数据源
 		 	search: '',  //查询字符串
 		 	dialogTitle: '新增同学信息',  //模态框标题
@@ -123,10 +151,16 @@ export default {
         birth: [
           { required: true, message: '请选择', trigger: 'blur' }
         ],
+        contactWay: [
+          { type: 'number', message: 'QQ号必须为数字值', trigger: 'blur'},
+          { pattern: /^\d{8,}$/, message: 'QQ号最少八位', trigger: 'blur' }
+        ],
         relationship: [
           { required: true, message: '请选择', trigger: 'blur' }
         ]
-      }
+      }, //校验规则
+      tipVisible: false,//提示框可见
+      tipForm: {} //将被改变relationship的数据
 		}
 	},
 	computed: {
@@ -141,7 +175,7 @@ export default {
    //  }
 	},
 	created() {
-		this.loading = true;
+		// this.loading = true;
 		const that = this;
 		// this.findAllJuniorFriendsData()
 		//   .then(data => {
@@ -160,7 +194,7 @@ export default {
 		openDialogToAdd() {
 		 	this.form = {
 		 	  gender: '男',
-		 	  relationship: 'normal',
+		 	  relationship: 'friend',
 		 	};
 		 	this.dialogTitle = '新增同学信息';
    	  this.formVisible = true;
@@ -179,12 +213,12 @@ export default {
         	} else {
         		//add
         		messageValue = '新增数据成功';
-        		//获取当前数据出生年与当前年计算年龄
-        		that.form.birth = moment(that.form.birth).format('YYYY-MM-DD');
-            let year = parseFloat(new Date().getFullYear());
-        		let age = year - parseFloat(String(that.form.birth).split('-')[0]);
-        		that.form.age = age;
         	}
+          //获取当前数据出生年与当前年计算年龄
+          that.form.birth = moment(that.form.birth).format('YYYY-MM-DD');
+          let year = parseFloat(new Date().getFullYear());
+          let age = year - parseFloat(String(that.form.birth).split('-')[0]);
+          that.form.age = age;
         	return;
         	that.saveOrEditJuniorFriendsData(that.form)
         	  .then(res => {
@@ -222,7 +256,42 @@ export default {
 		handleCancleDialog() {
 			this.formVisible = false;
 			this.form = {};
-		}
+		},
+    //删除好友-提示框
+    handleDelete(index,row) {
+      this.tipVisible = true;
+      this.tipForm = JSON.parse(JSON.stringify(row));
+    },
+    //确认删除好友
+    confirmToChangeRel() {
+      const that = this;
+      this.tipForm.relationship = 'normal';
+      console.log(this.tipForm);
+      return;
+      this.saveOrEditJuniorFriendsData(this.tipForm)
+          .then(res => {
+            that.$notify({
+                title: '成功',
+                message: '很遗憾，'+this.tipForm.name+' 同学不再是您的好友',
+                type: 'success'
+            });
+            that.findAllJuniorFriendsData();
+            that.tipVisible = false;
+            that.tipForm = {};
+          })
+          .catch(err => {
+            that,$notify.error({
+              title: '失败',
+              message: err
+            });
+            that.tipVisible = false;
+          });
+    },
+    //取消删除好友
+    cancleChangeDialog() {
+      this.tipVisible = false;
+      this.tipForm = {};
+    }
 	}
 }
 </script>

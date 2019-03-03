@@ -25,9 +25,10 @@ export default {
         axios.get('/junior/findAll')
           .then(({data})=>{
            	context.commit('changeJuniors',data);
+            resolve(data.data);
           })
           .catch((err)=>{
-            console.log(err);
+            reject(err);
           });
    	  });
     },
@@ -49,9 +50,10 @@ export default {
         axios.get('/junior/findFriends')
           .then(({data})=>{
             context.commit('changeJuniorFs',data);
+            resolve(data.data);
           })
           .catch((err)=>{
-            console.log(err);
+            reject(data.data);
           });
       });
     },

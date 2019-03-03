@@ -1,5 +1,5 @@
 <template>
- 	<div class="juniorOverInfo">
+ 	<div class="seniorOverInfo">
  	  <div class="option-div">
 			<el-input 
 				v-model="searchName" 
@@ -13,24 +13,33 @@
       </el-select>
 			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
 		</div>
-		<el-table :data="dataSource" v-loading="loading" stripe style="width: 100%"> 
+		<el-table 
+      :data="dataSource"
+      v-loading="loading" 
+      stripe
+      style="width: 100%"
+      border
+      height='400'
+    > 
 	    <el-table-column prop="name" label="姓名" align="center">
 	    </el-table-column>
 	    <el-table-column prop="age" label="年龄" align="center">
 			</el-table-column>
 			<el-table-column prop="gender" label="性别" align="center">
 	    </el-table-column>
-	    <el-table-column prop="birth" label="出生年月" align="center">
-	    </el-table-column>
+      <el-table-column prop="phone" label="电话" align="center">
+      </el-table-column>
       <el-table-column prop="contactWay" label="QQ号" align="center">
       </el-table-column>
+	    <el-table-column prop="birth" label="出生年月" align="center">
+	    </el-table-column>
 	    <el-table-column prop="relationship" label="关系" align="center">
 	    	<template slot-scope="scope">
 	    		<el-tag 
-	    			:type="scope.row.relationship !== 'normal' ? 'warning' : (scope.row.relationship === 'normal' ? 'success' : 'info')"
+	    			:type="scope.row.relationship === 'friend' ? 'danger' : (scope.row.relationship === 'normal' ? 'success' : 'warning')"
           	disable-transitions
         	>
-        		{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '厌者')}}
+        		{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '同友')}}
         	</el-tag>
 	    	</template>
 	    </el-table-column>
@@ -69,10 +78,28 @@
 	         		placeholder="选择日期"
 	         		v-model="form.birth"
 	         		style="width: 100%;"
+              @change="relateAge"
          		>
 	        	</el-date-picker>
 	      	</el-col>
 		    </el-form-item>
+         <el-form-item label="年龄:" prop="age" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.age" 
+              autocomplete="off" 
+              disabled
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="电话:" prop="phone" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.phone" 
+              autocomplete="off" 
+            ></el-input>
+          </el-col>
+        </el-form-item>
         <el-form-item label="QQ号:" prop="contactWay" :label-width="formLabelWidth">
           <el-col :span="14">
             <el-input 
@@ -86,7 +113,7 @@
 						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
 		        	<el-option label='好友' value='friend'></el-option>
             	<el-option label='普通' value='normal'></el-option>
-              <el-option label='黑名单' value='bore'></el-option>
+              <el-option label='同友' value='other'></el-option>
 			    	</el-select>
 					</el-col>
 		    </el-form-item>
@@ -131,6 +158,10 @@ export default {
         birth: [
           { required: true, message: '请选择', trigger: 'blur' }
         ],
+        phone: [
+          { type: 'number', message: '电话号必须为数字值', trigger: 'blur'},
+          { pattern: /^\d{11}$/, message: '电话号码为十一位数', trigger: 'blur' }
+        ],
         contactWay: [
           { type: 'number', message: 'QQ号必须为数字值', trigger: 'blur'},
           { pattern: /^\d{8,}$/, message: 'QQ号最少八位', trigger: 'blur' }
@@ -155,7 +186,7 @@ export default {
 	created() {
 		// this.loading = true;
 		// const that = this;
-		// this.findAllJuniorOverData()
+		// this.findAllSeniorOverData()
 		//   .then(data => {
 		//   	that.loading = false;
 		//   })
@@ -167,16 +198,25 @@ export default {
 		//   })
 	},
 	methods: {
-		...mapActions(['findAllJuniorOverData','saveOrEditJuniorData']),
+		...mapActions(['findAllSeniorOverData','saveOrEditSeniorData']),
     //打开新增模态框
 		openDialogToAdd() {
 		 	this.form = {
 		 	  gender: '男',
 		 	  relationship: 'normal',
+        age: 0,
 		 	};
 		 	this.dialogTitle = '新增同学信息';
    	  this.formVisible = true;
 		},
+    // change the value about birthday to relate age
+    relateAge() {
+      //获取当前数据出生年与当前年计算年龄
+      this.form.birth = moment(this.form.birth).format('YYYY-MM-DD');
+      let year = parseFloat(new Date().getFullYear());
+      let age = year - parseFloat(String(this.form.birth).split('-')[0]);
+      this.form.age = Number.isNaN(age) ? 0 : age;
+    },
 		//add or edit
 		verifySaveData(formName) {
       //新增时通过birth计算年龄从而保存
@@ -192,20 +232,15 @@ export default {
         		//add
         		messageValue = '新增数据成功';
         	}
-          //获取当前数据出生年与当前年计算年龄
-          that.form.birth = moment(that.form.birth).format('YYYY-MM-DD');
-          let year = parseFloat(new Date().getFullYear());
-          let age = year - parseFloat(String(that.form.birth).split('-')[0]);
-          that.form.age = age;
         	return;
-        	that.saveOrEditJuniorOverData(that.form)
+        	that.saveOrEditSeniorData(that.form)
         	  .then(res => {
         	  	that.$notify({
 			           	title: '成功',
 			           	message: messageValue,
 			           	type: 'success'
 		        	});
-		        	that.findAllJuniorOverData();
+		        	that.findAlSeniorOverData();
 		        	that.formVisible = false;
         	  })
         	  .catch(err => {

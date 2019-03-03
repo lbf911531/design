@@ -3,33 +3,44 @@ import qs from 'qs';
 
 export default {
 	state: {
-    priamrys: []
+    universityClassList: [],
+    universityDepList: [],
+    universitySchoolList: []
 	},
 	getters: {
-    priamrys: state => state.priamrys
+    universityClassList: state => state.universityClassList,
+    universityDepList: state => state.universityDepList,
+    universitySchoolList: state => state.universitySchoolList
 	},
 	mutations: {
-    changePriamrys(state,data) {
- 	    state.priamrys = data;
-    }
+    changeUniversityClassList(state,data) {
+ 	    state.universityClassList = data;
+    },
+    changeUniversityDepList(state,data) {
+      state.universityDepList = data;
+    },
+     changeUniversitySchoolList(state,data) {
+      state.universitySchoolList = data;
+    },
 	},
 	actions: {
-    //获取小学列表信息
-    findAllPriamrys(context) {
+    //获取大学 classmate 信息
+    findUniversityClassData(context) {
    	  return new Promise((resolve,reject)=>{
-        axios.get('/primary/findAll')
+        axios.get('/university/findClassmateList')
           .then(({data})=>{
-           	context.commit('changePriamrys',data);
+           	context.commit('changeUniversityClassList',data);
+            resolve(data.data);
           })
           .catch((err)=>{
-            console.log(err);
+            reject(err);
           });
    	  });
     },
     //add or edit
-    savePrimaryData(context,obj) {
+    saveUniversityClassData(context,obj) {
       return new Promise((resolve,reject)=>{
-        axios.post('/primary/saveOrUpdate',qs.stringify(obj))
+        axios.post('/university/saveOrUpdateClassList',qs.stringify(obj))
           .then(function(param){
             resolve(param);
           })
@@ -37,6 +48,54 @@ export default {
             reject(error);
           })
       });
-    }
+    },
+    findUniversityDepData(context) {
+      return new Promise((resolve,reject)=>{
+        axios.get('/university/findDepartmentList')
+          .then(({data})=>{
+            context.commit('changeUniversityDepList',data);
+            resolve(data.data);
+          })
+          .catch((err)=>{
+            reject(err);
+          });
+      });
+    },
+    //add or edit
+    saveUniversityDepData(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/university/saveOrUpdateDepList',qs.stringify(obj))
+          .then(function(param){
+            resolve(param);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
+    },
+    findUniversitySchoolData(context) {
+      return new Promise((resolve,reject)=>{
+        axios.get('/university/findSchoolList')
+          .then(({data})=>{
+            context.commit('changeUniversitySchoolList',data);
+            resolve(data.data);
+          })
+          .catch((err)=>{
+            reject(err);
+          });
+      });
+    },
+    //add or edit
+    saveUniversitySchoolData(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/university/saveOrUpdateSchoolList',qs.stringify(obj))
+          .then(function(param){
+            resolve(param);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
+    },
 	}
 }

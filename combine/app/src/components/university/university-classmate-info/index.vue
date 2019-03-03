@@ -1,5 +1,5 @@
 <template>
- 	<div class="juniorOverInfo">
+ 	<div class="universityClass">
  	  <div class="option-div">
 			<el-input 
 				v-model="searchName" 
@@ -13,66 +13,90 @@
       </el-select>
 			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
 		</div>
-		<el-table :data="dataSource" v-loading="loading" stripe style="width: 100%"> 
-	    <el-table-column prop="name" label="姓名" align="center">
-	    </el-table-column>
-	    <el-table-column prop="age" label="年龄" align="center">
-			</el-table-column>
-			<el-table-column prop="gender" label="性别" align="center">
-	    </el-table-column>
-	    <el-table-column prop="birth" label="出生年月" align="center">
-	    </el-table-column>
+		<el-table 
+      :data="dataSource"
+      v-loading="loading" 
+      stripe
+      style="width: 100%"
+      height='400'
+    > 
+      <el-table-column prop="name" label="姓名" align="center">
+      </el-table-column>
+      <el-table-column prop="age" label="年龄" align="center">
+      </el-table-column>
+      <el-table-column prop="gender" label="性别" align="center">
+      </el-table-column>
+      <el-table-column prop="phone" label="电话" align="center">
+      </el-table-column>
       <el-table-column prop="contactWay" label="QQ号" align="center">
       </el-table-column>
-	    <el-table-column prop="relationship" label="关系" align="center">
-	    	<template slot-scope="scope">
-	    		<el-tag 
-	    			:type="scope.row.relationship !== 'normal' ? 'warning' : (scope.row.relationship === 'normal' ? 'success' : 'info')"
-          	disable-transitions
-        	>
-        		{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '厌者')}}
-        	</el-tag>
-	    	</template>
-	    </el-table-column>
-			<el-table-column label="操作" align="center">
-	      <template slot-scope="scope">
-	        <el-button 
-	        	size="mini" 
-	        	type="info" 
-	        	@click="handleEdit(scope.$index, scope.row)"
-        	  icon="el-icon-edit" 
-      	  >编辑</el-button>
-	      </template>
-	    </el-table-column>
-		</el-table>
+      <el-table-column prop="birth" label="出生年月" align="center">
+      </el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-tooltip 
+            class="item" 
+            effect="dark"
+            content="编辑" 
+            placement="top-start"
+          >
+              <el-button 
+                type="primary"
+                circle
+                size="mini"
+                @click="handleEdit(scope.$index, scope.row)"
+                icon="el-icon-edit" 
+              ></el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </el-table>
 		<el-dialog :title="dialogTitle" :visible.sync="formVisible">
-		  <el-form :model="form" :rules="rules" ref="form">
-		    <el-form-item label="姓名:" prop="name" :label-width="formLabelWidth">
-	    	 	<el-col :span="14">
-						<el-input 
-							v-model="form.name" 
-							autocomplete="off" 
-							:disabled="this.form.name && this.form.id ? true : false"
-						></el-input>
-					</el-col>
-				</el-form-item>
-		   	<el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
-				    <el-radio-group v-model="form.gender">
-				      <el-radio label="男"></el-radio>
-				      <el-radio label="女"></el-radio>
-				    </el-radio-group>
-				  </el-form-item>
-		    <el-form-item label="出生年月:" prop="birth" :label-width="formLabelWidth">
-		    	<el-col :span="14">
-	        	<el-date-picker 
-	         		type="date" 
-	         		placeholder="选择日期"
-	         		v-model="form.birth"
-	         		style="width: 100%;"
-         		>
-	        	</el-date-picker>
-	      	</el-col>
-		    </el-form-item>
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="姓名:" prop="name" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.name" 
+              autocomplete="off" 
+              :disabled="this.form.name && this.form.id ? true : false"
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
+            <el-radio-group v-model="form.gender">
+              <el-radio label="男"></el-radio>
+              <el-radio label="女"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+        <el-form-item label="出生年月:" prop="birth" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-date-picker 
+              type="date" 
+              placeholder="选择日期"
+              v-model="form.birth"
+              style="width: 100%;"
+              @change="relateAge"
+            >
+            </el-date-picker>
+          </el-col>
+        </el-form-item>
+         <el-form-item label="年龄:" prop="age" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.age" 
+              autocomplete="off" 
+              disabled
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="电话:" prop="phone" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.phone" 
+              autocomplete="off" 
+            ></el-input>
+          </el-col>
+        </el-form-item>
         <el-form-item label="QQ号:" prop="contactWay" :label-width="formLabelWidth">
           <el-col :span="14">
             <el-input 
@@ -81,21 +105,19 @@
             ></el-input>
           </el-col>
         </el-form-item>
-		    <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
-					<el-col :span="14">
-						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
-		        	<el-option label='好友' value='friend'></el-option>
-            	<el-option label='普通' value='normal'></el-option>
-              <el-option label='黑名单' value='bore'></el-option>
-			    	</el-select>
-					</el-col>
-		    </el-form-item>
-		  </el-form>
-		  <div slot="footer" class="dialog-footer">
+        <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;" disabled>
+              <el-option label='同学' value='classFriend'></el-option>
+            </el-select>
+          </el-col>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
         <el-button @click="handleCancleDialog">取 消</el-button>
         <el-button type="success" @click="verifySaveData('form')">保 存</el-button>
-		  </div>
-		</el-dialog>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -112,8 +134,7 @@ export default {
 		 		name: 'test',
 		 		age: 16,
 		 		gender: '男',
-		 		birth: '2014-01-23',
-		 		relationship: 'normal'
+		 		birth: '2014-01-23'
 		 	}], //表格数据源
 		 	searchName: '',  //查询字符串
       searchSex: '',
@@ -155,7 +176,7 @@ export default {
 	created() {
 		// this.loading = true;
 		// const that = this;
-		// this.findAllJuniorOverData()
+		// this.findUniversityClassData()
 		//   .then(data => {
 		//   	that.loading = false;
 		//   })
@@ -167,16 +188,24 @@ export default {
 		//   })
 	},
 	methods: {
-		...mapActions(['findAllJuniorOverData','saveOrEditJuniorData']),
+		...mapActions(['findUniversityClassData','saveUniversityClassData']),
     //打开新增模态框
 		openDialogToAdd() {
 		 	this.form = {
 		 	  gender: '男',
-		 	  relationship: 'normal',
+		 	  relationship: 'classFriend',
+        age: 0,
 		 	};
 		 	this.dialogTitle = '新增同学信息';
    	  this.formVisible = true;
 		},
+    relateAge() {
+      //获取当前数据出生年与当前年计算年龄
+      this.form.birth = moment(this.form.birth).format('YYYY-MM-DD');
+      let year = parseFloat(new Date().getFullYear());
+      let age = year - parseFloat(String(this.form.birth).split('-')[0]);
+      this.form.age = Number.isNaN(age) ? 0 : age;
+    },
 		//add or edit
 		verifySaveData(formName) {
       //新增时通过birth计算年龄从而保存
@@ -205,7 +234,7 @@ export default {
 			           	message: messageValue,
 			           	type: 'success'
 		        	});
-		        	that.findAllJuniorOverData();
+		        	that.findUniversityClassData();
 		        	that.formVisible = false;
         	  })
         	  .catch(err => {

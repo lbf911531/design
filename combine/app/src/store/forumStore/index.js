@@ -20,9 +20,10 @@ export default {
         axios.get('/primary/findAll')
           .then(({data})=>{
            	context.commit('changePriamrys',data);
+            resolve(data.data);
           })
           .catch((err)=>{
-            console.log(err);
+            reject(data.data);
           });
    	  });
     },

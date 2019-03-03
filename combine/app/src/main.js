@@ -6,7 +6,9 @@ import router from './router'
 import store from './store'
 import elementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import _crypto from 'crypto'
 
+Vue.prototype.$crypto = _crypto;
 Vue.use(elementUi);
 
 Vue.config.productionTip = false

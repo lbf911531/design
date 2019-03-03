@@ -11,9 +11,16 @@
         <el-option label='男' value="男"></el-option>
         <el-option label='女' value="女"></el-option>
       </el-select>
-			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+			<el-button  type="primary" round @click="openDialogToAdd">新 增</el-button>
 		</div>
-		<el-table :data="dataSource" v-loading="loading" stripe style="width: 100%"> 
+		<el-table 
+      :data="dataSource" 
+      v-loading="loading" 
+      stripe 
+      style="width: 100%" 
+      border
+      height='400'
+    > 
 	    <el-table-column prop="name" label="姓名" align="center">
 	    </el-table-column>
 	    <el-table-column prop="age" label="年龄" align="center">
@@ -22,15 +29,17 @@
 	    </el-table-column>
 	    <el-table-column prop="birth" label="出生年月" align="center">
 	    </el-table-column>
+      <el-table-column prop="phone" label="电话" align="center">
+      </el-table-column>
       <el-table-column prop="contactWay" label="QQ号" align="center">
       </el-table-column>
 	    <el-table-column prop="relationship" label="关系" align="center">
 	    	<template slot-scope="scope">
 	    		<el-tag 
-	    			:type="scope.row.relationship !== 'normal' ? 'warning' : (scope.row.relationship === 'normal' ? 'success' : 'info')"
+	    			type='warning'
           	disable-transitions
         	>
-        		{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '厌者')}}
+        		{{'同级同友'}}
         	</el-tag>
 	    	</template>
 	    </el-table-column>
@@ -38,7 +47,7 @@
 	      <template slot-scope="scope">
 	        <el-button 
 	        	size="mini" 
-	        	type="info" 
+	        	type="text" 
 	        	@click="handleEdit(scope.$index, scope.row)"
         	  icon="el-icon-edit" 
       	  >编辑</el-button>
@@ -69,10 +78,28 @@
 	         		placeholder="选择日期"
 	         		v-model="form.birth"
 	         		style="width: 100%;"
+              @change='relateAge'
          		>
 	        	</el-date-picker>
 	      	</el-col>
 		    </el-form-item>
+        <el-form-item label="年龄:" prop="age" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.age" 
+              autocomplete="off" 
+              disabled
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="电话:" prop="phone" :label-width="formLabelWidth">
+          <el-col :span="14">
+            <el-input 
+              v-model="form.phone" 
+              autocomplete="off" 
+            ></el-input>
+          </el-col>
+        </el-form-item>
         <el-form-item label="QQ号:" prop="contactWay" :label-width="formLabelWidth">
           <el-col :span="14">
             <el-input 
@@ -83,10 +110,10 @@
         </el-form-item>
 		    <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
 					<el-col :span="14">
-						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
+						<el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;" disabled>
 		        	<el-option label='好友' value='friend'></el-option>
-            	<el-option label='普通' value='normal'></el-option>
-              <el-option label='黑名单' value='bore'></el-option>
+              <el-option label='普通' value='normal'></el-option>
+            	<el-option label='同级同友' value='other'></el-option>
 			    	</el-select>
 					</el-col>
 		    </el-form-item>
@@ -113,7 +140,7 @@ export default {
 		 		age: 16,
 		 		gender: '男',
 		 		birth: '2014-01-23',
-		 		relationship: 'normal'
+		 		relationship: 'other'
 		 	}], //表格数据源
 		 	searchName: '',  //查询字符串
       searchSex: '',
@@ -130,6 +157,10 @@ export default {
         ],
         birth: [
           { required: true, message: '请选择', trigger: 'blur' }
+        ],
+        phone: [
+          { type: 'number', message: '电话号必须为数字值', trigger: 'blur'},
+          { pattern: /^\d{11}$/, message: '电话号码为十一位数', trigger: 'blur' }
         ],
         contactWay: [
           { type: 'number', message: 'QQ号必须为数字值', trigger: 'blur'},
@@ -172,11 +203,19 @@ export default {
 		openDialogToAdd() {
 		 	this.form = {
 		 	  gender: '男',
+        age: 0,
 		 	  relationship: 'normal',
 		 	};
 		 	this.dialogTitle = '新增同学信息';
    	  this.formVisible = true;
 		},
+    relateAge() {
+      //获取当前数据出生年与当前年计算年龄
+      this.form.birth = moment(this.form.birth).format('YYYY-MM-DD');
+      let year = parseFloat(new Date().getFullYear());
+      let age = year - parseFloat(String(this.form.birth).split('-')[0]);
+      this.form.age = Number.isNaN(age) ? 0 : age;
+    },
 		//add or edit
 		verifySaveData(formName) {
       //新增时通过birth计算年龄从而保存
@@ -192,11 +231,6 @@ export default {
         		//add
         		messageValue = '新增数据成功';
         	}
-          //获取当前数据出生年与当前年计算年龄
-          that.form.birth = moment(that.form.birth).format('YYYY-MM-DD');
-          let year = parseFloat(new Date().getFullYear());
-          let age = year - parseFloat(String(that.form.birth).split('-')[0]);
-          that.form.age = age;
         	return;
         	that.saveOrEditJuniorOverData(that.form)
         	  .then(res => {

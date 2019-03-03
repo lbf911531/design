@@ -3,15 +3,26 @@
 // global.pool
 
 let pool = require('./pool');
+let login = (params,handle) => {
+	pool.getConnection((err,conn) => {
+		if(!err) {
+			let sql = 'select * from user_table where user=? and password=?';
+			conn.query(sql,[params.user,params.password],function(err,results) {
+				handle(err,results);
+			});
+			conn.release();
+		}
+	})
+}
 let findAllUser = (handle)=>{
 	// 查找所有的user数据
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'select * from tbl';
+			let sql = 'select * from user_table';
 			conn.query(sql,[],function(err,results){
 				if(!err){
-					// console.log(results);
-					handle(results);
+					console.log(results);
+					handle(err,results);
 				}
 			});
 			conn.release();
@@ -79,6 +90,7 @@ let updateUserById = (obj,handle)=>{
 	});
 };
 module.exports = {
+	login,
 	findAllUser,
 	findUserById,
 	deleteUserById,

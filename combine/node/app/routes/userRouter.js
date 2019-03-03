@@ -3,6 +3,17 @@
 const express = require('express');
 const userDB = require('../db/userDB');
 let userRouter = express.Router();
+userRouter.post('/login',function(req,resp,next){
+	let query = req.body;
+	userDB.login(query,function(err,results){
+		if(err) {
+			resp.send(err);
+			//问题:如何抛出错误或者判断空结果下自定义错误抛给前端
+		} else if(results.length < 1) {
+			resp.send(401,{message: '用户名或密码错误'});
+		} else resp.send(results);
+	});
+})
 userRouter.get('/findAll',function(req,resp,next){
 	//db
 	userDB.findAllUser(function(results){

@@ -5,6 +5,7 @@
     <el-tabs v-model="juniorActive" type="card" @tab-click="handleClick">
 	    <el-tab-pane label="集体信息" name="junior-over-info"></el-tab-pane>
 	    <el-tab-pane label="好友信息" name="junior-friends-info"></el-tab-pane>
+      <el-tab-pane label="黑名单" name="junior-blacklist"></el-tab-pane>
     </el-tabs>
     <router-view></router-view>
   </div>
