@@ -4,13 +4,13 @@ import qs from 'qs';
 export default {
 	state: {
     seniorsOverList: [],
-    seniorFriendList: [],
+    seniorFriendsList: [],
     seniorOthersList: [],
     seniorTeachersList: []
 	},
 	getters: {
     seniorsOverList: state => state.seniorsOverList,
-    seniorFriendsList: state => state.seniorFriendList,
+    seniorFriendsList: state => state.seniorFriendsList,
     seniorOthersList: state => state.seniorOthersList,
     seniorTeachersList: state => state.seniorTeachersList,
 	},
@@ -35,7 +35,6 @@ export default {
         axios.get('/senior/data/find/all')
           .then(({data})=>{
             context.commit('changeSeniorsOverList',data);
-            console.log(data);
             resolve(data.data);
           })
           .catch((err)=>{

@@ -31,7 +31,7 @@ const addNewSeniorValue = (params, handle) => {
       return;
     }
     const sql =
-      "Insert into senior_table(name,age,gender,birth,relationship) value(?,?,?,?,?)";
+      "Insert into senior_table(name,age,gender,birth,relationship,phone,contactWay) value(?,?,?,?,?)";
     conn.query(
       sql,
       [
@@ -39,7 +39,9 @@ const addNewSeniorValue = (params, handle) => {
         params.age,
         params.gender,
         params.birth,
-        params.relationship
+        params.relationship,
+        params.phone,
+        params.contactWay,
       ],
       (err, results) => {
         handle(err, results);
@@ -61,7 +63,7 @@ const updateSeniorValue = (params, handle) => {
       return;
     }
     const sql =
-      "update senior_table set name=?,age=?,gender=?,birth=?,relationship=? where id=?";
+      "update senior_table set name=?,age=?,gender=?,birth=?,relationship=?,phone=?,contactWay=? where id=?";
     conn.query(
       sql,
       [
@@ -70,6 +72,8 @@ const updateSeniorValue = (params, handle) => {
         params.gender,
         params.birth,
         params.relationship,
+        params.phone,
+        params.contactWay,
         params.id
       ],
       (err, results) => {

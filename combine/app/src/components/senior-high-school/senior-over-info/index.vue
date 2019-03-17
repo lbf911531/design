@@ -114,7 +114,6 @@ export default {
         sex: [{ required: true, message: "请选择", trigger: "blur" }],
         birth: [{ required: true, message: "请选择", trigger: "blur" }],
         phone: [
-          { type: "number", message: "电话号必须为数字值", trigger: "blur" },
           {
             pattern: /^\d{11}$/,
             message: "电话号码为十一位数",
@@ -122,8 +121,7 @@ export default {
           }
         ],
         contactWay: [
-          { type: "number", message: "QQ号必须为数字值", trigger: "blur" },
-          { pattern: /^\d{8,}$/, message: "QQ号最少八位", trigger: "blur" }
+          { pattern: /^\d{8,}$/, message: "QQ号最少八位数字", trigger: "blur" }
         ],
         relationship: [{ required: true, message: "请选择", trigger: "blur" }]
       }
@@ -190,6 +188,7 @@ export default {
     verifySaveData(formName) {
       //新增时通过birth计算年龄从而保存
       const that = this;
+      this.loading = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
           let messageValue = "";
@@ -203,27 +202,30 @@ export default {
             messageValue = "新增数据成功";
             handleMethod = that.saveSeniorData;
           }
+          console.log(that.form);
           handleMethod &&
             handleMethod(that.form)
               .then(res => {
-                that.$notify({
+                that.$message({
                   title: "成功",
                   message: messageValue,
                   type: "success"
                 });
-                that.findAlSeniorOverData();
                 that.formVisible = false;
+                that.form = {};
+                that.loading = false;
+                that.findAllSeniorOverData();
               })
               .catch(err => {
-                that,
-                  $notify.error({
-                    title: "失败",
-                    message: err
-                  });
+                that.$message.error({
+                  title: "失败",
+                  message: err
+                });
+                that.loading = false;
                 that.formVisible = false;
               });
         } else {
-          that.$notify.error({
+          that.$message.error({
             title: "失败",
             message: "输入数据与校验规则不符"
           });
