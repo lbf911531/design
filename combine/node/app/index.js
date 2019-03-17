@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/userRouter');
-const primaryRouter = require('./routes/primaryRouter')
+const primaryRouter = require('./routes/primaryRouter');
+const seniorRouter = require('./routes/seniorRoutes');
 let app = express();
 // 使用body-parser中间件
 app.use(bodyParser.json());
@@ -22,6 +23,7 @@ app.all('*',function(req,resp,next){
 // app.use(userRouter);
 app.use('/user',userRouter);
 app.use('/primary',primaryRouter);
+app.use('/senior',seniorRouter);
 app.listen(3000,function(){
 	console.log('3000服务器已启动');
 });

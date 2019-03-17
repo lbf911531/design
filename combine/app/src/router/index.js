@@ -18,7 +18,9 @@ import UniversityDep from '@/components/university/university-department-info'
 import UniversitySchool from '@/components/university/university-school-info'
 import Forum from '@/components/forum'
 import Login from '@/components/login'
+import FindPwd from '@/components/login/findMyPwd'
 import NotFound from '@/components/notFound'
+
 
 import store from '@/store/index'
 
@@ -34,11 +36,17 @@ const router = new Router({
           {
             path: '/homepage',
             name: 'HomePage',
-            component: HomePage
+            component: HomePage,
+            // meta: {
+            //   requireAuth: true
+            // }
           },{
             path: '/primary-school',
             name: 'Primary',
-            component: Primary
+            component: Primary,
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/junior-high-school',
             name: 'Junior',
@@ -57,7 +65,10 @@ const router = new Router({
                 name: 'JuniorBlacklist',
                 component: JuniorBlacklist
               }
-            ]
+            ],
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/senior-high-school',
             name: 'Senior',
@@ -80,7 +91,10 @@ const router = new Router({
                 name: 'SeniorTeachers',
                 component: SeniorTeachers
               }
-            ]
+            ],
+            // meta: {
+            //   requireAuth: true
+            // }
           },{
             path: '/university',
             name: 'University',
@@ -99,11 +113,17 @@ const router = new Router({
                 name: 'UniversitySchool',
                 component: UniversitySchool
               }
-            ]
+            ],
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/forum',
             name: 'Forum',
-            component: Forum
+            component: Forum,
+            meta: {
+              requireAuth: true
+            }
           }
       ],
       meta: {
@@ -113,6 +133,10 @@ const router = new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },{
+      path: '/findMyPwd',
+      name: 'FindPwd',
+      component: FindPwd
     },{
       path: '*',
       name: 'NotFound',

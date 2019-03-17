@@ -32,9 +32,10 @@ export default {
     //获取高中列表信息
     findAllSeniorOverData(context) {
    	  return new Promise((resolve,reject)=>{
-        axios.get('/senior/findAll')
+        axios.get('/senior/data/find/all')
           .then(({data})=>{
-           	context.commit('changeSeniorsOverList',data);
+            context.commit('changeSeniorsOverList',data);
+            console.log(data);
             resolve(data.data);
           })
           .catch((err)=>{
@@ -42,10 +43,22 @@ export default {
           });
    	  });
     },
-    //add or edit
-    saveOrEditSeniorData(context,obj) {
+    //add
+    saveSeniorData(context,obj) {
       return new Promise((resolve,reject)=>{
-        axios.post('/senior/saveOrUpdateOverList',qs.stringify(obj))
+        axios.post('/senior/data/new',qs.stringify(obj))
+          .then(function(param){
+            resolve(param);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
+    },
+    //update
+    updateSeniorData(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/senior/data/update',qs.stringify(obj))
           .then(function(param){
             resolve(param);
           })
@@ -57,7 +70,7 @@ export default {
     //get friend value
     findSeniorFriendsData(context) {
       return new Promise((resolve,reject)=>{
-        axios.get('/senior/findFriendsList')
+        axios.get('/senior/data/find/by/relationship?relationship=friend')
           .then(({data})=>{
             context.commit('changeSeniorsFriendsList',data);
             resolve(data.data);
@@ -107,7 +120,7 @@ export default {
     //get teacher value
     findSeniorTeachersData(context) {
       return new Promise((resolve,reject)=>{
-        axios.get('/senior/findTeachersList')
+        axios.get('/senior/data/find/by/relationship?relationship=teacher')
           .then(({data})=>{
             context.commit('changeSeniorsTeachersList',data);
             resolve(data.data);
@@ -131,3 +144,7 @@ export default {
     },
 	}
 }
+/**
+ * ps : 根据字段relationship 查询数据，走同一个接口
+ * 增改 亦走同一个接口，传值不同，（包括单独事件改变关系）
+ **/

@@ -11,7 +11,10 @@ userRouter.post('/login',function(req,resp,next){
 			//问题:如何抛出错误或者判断空结果下自定义错误抛给前端
 		} else if(results.length < 1) {
 			resp.send(401,{message: '用户名或密码错误'});
-		} else resp.send(results);
+		} else {
+			// resp.send(results);
+		  resp.send(true);
+		}
 	});
 })
 userRouter.get('/findAll',function(req,resp,next){

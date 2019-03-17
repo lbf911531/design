@@ -1,5 +1,4 @@
 // primaryRouter.js
-// 所有的课程模块的路由
 const express = require('express');
 const primaryDB = require('../db/primaryDB');
 let primaryRouter = express.Router();

@@ -3,25 +3,25 @@
     <div class="login-table">
       <el-form ref="loginForm" :model="loginForm" label-width="80px" :rules="rules">
         <el-form-item label="账号" prop="user">
-          <el-input 
-            v-model="loginForm.user" 
-            autocomplete="off" 
+          <el-input
+            v-model="loginForm.user"
+            autocomplete="off"
             prefix-icon=""
           ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input  
+          <el-input
             type="password"
-            v-model="loginForm.password" 
-            autocomplete="off" 
+            v-model="loginForm.password"
+            autocomplete="off"
             @keyup.enter.native="handleLogin('loginForm')"
           ></el-input>
         </el-form-item>
       </el-form>
       <div class="login-btn-div">
-        <el-button 
-          type="primary" 
-          @click="handleLogin('loginForm')" 
+        <el-button
+          type="primary"
+          @click="handleLogin('loginForm')"
           :loading="isLoading"
           class="login-btn"
         >登录</el-button>
@@ -31,9 +31,9 @@
           type="text"
           @click="handleRegister"
         >注册</el-button>
-        <el-button 
-          type="text" 
-          @click="findPassword" 
+        <el-button
+          type="text"
+          @click="findPassword"
         >忘记密码 ?</el-button>
       </div>
     </div>
@@ -79,7 +79,10 @@ export default {
           this.toLogin(params)
             .then(res => {
               this.isLoading = false;
-              this.$router.push('/homepage');
+              if(res === true) {
+                this.$router.push('/homepage');
+                console.log(1);
+              }
             })
             .catch(err => {
               this.isLoading = false;
@@ -98,7 +101,9 @@ export default {
         }
       })
     },
-    findPassword() {},
+    findPassword() {
+      this.$router.replace('/findMyPwd');
+    },
     handleRegister() {}
   }
 }
@@ -133,5 +138,5 @@ export default {
   }
   .help > .el-button:last-child{
     float: right;
-  } 
+  }
 </style>
