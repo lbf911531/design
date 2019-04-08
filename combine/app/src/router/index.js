@@ -19,6 +19,7 @@ import UniversitySchool from '@/components/university/university-school-info'
 import Forum from '@/components/forum'
 import Login from '@/components/login'
 import FindPwd from '@/components/login/findMyPwd'
+import Register from '@/components/login/register'
 import NotFound from '@/components/notFound'
 
 
@@ -138,6 +139,10 @@ const router = new Router({
       name: 'FindPwd',
       component: FindPwd
     },{
+      path: '/register',
+      name: 'Register',
+      component: Register
+    },{
       path: '*',
       name: 'NotFound',
       component: NotFound
@@ -151,7 +156,7 @@ router.beforeEach((to, from, next) => {
     if (token) { // 通过vuex state获取当前的token是否存在
       next()
     } else {
-      console.log('该页面需要登陆')
+      console.log('该页面需要登陆');
       next({
         path: '/login'
         // query: {redirect: to.fullPath} // 将跳转的路由path作为参数，登录成功后跳转到该路由

@@ -1,9 +1,9 @@
 <template>
  	<div class="juniorOverInfo">
  	  <div class="option-div">
-			<el-input 
-				v-model="searchName" 
-				placeholder="请输入姓名" 
+			<el-input
+				v-model="searchName"
+				placeholder="请输入姓名"
 				clearable
 				suffix-icon="el-icon-search"
 			></el-input>
@@ -13,13 +13,14 @@
       </el-select>
 			<el-button  type="primary" round @click="openDialogToAdd">新 增</el-button>
 		</div>
-		<el-table 
-      :data="dataSource" 
-      v-loading="loading" 
-      stripe 
-      style="width: 100%" 
+		<el-table
+      :data="dataSource"
+      v-loading="loading"
+      stripe
+      style="width: 100%"
       border
-    > 
+      max-height='360'
+    >
 	    <el-table-column prop="name" label="姓名" align="center">
 	    </el-table-column>
 	    <el-table-column prop="age" label="年龄" align="center">
@@ -30,7 +31,7 @@
       </el-table-column>
 	    <el-table-column prop="subject" label="教学学科" align="center">
 	    	<template slot-scope="scope">
-	    		<el-tag 
+	    		<el-tag
 	    			type='primary'
           	disable-transitions
         	>
@@ -40,11 +41,11 @@
 	    </el-table-column>
 			<el-table-column label="操作" align="center">
 	      <template slot-scope="scope">
-	        <el-button 
-	        	size="mini" 
-	        	type="text" 
+	        <el-button
+	        	size="mini"
+	        	type="text"
 	        	@click="handleEdit(scope.$index, scope.row)"
-        	  icon="el-icon-edit" 
+        	  icon="el-icon-edit"
       	  >编辑</el-button>
 	      </template>
 	    </el-table-column>
@@ -53,9 +54,9 @@
 		  <el-form :model="form" :rules="rules" ref="form">
 		    <el-form-item label="姓名:" prop="name" :label-width="formLabelWidth">
 	    	 	<el-col :span="14">
-						<el-input 
-							v-model="form.name" 
-							autocomplete="off" 
+						<el-input
+							v-model="form.name"
+							autocomplete="off"
 							:disabled="this.form.name && this.form.id ? true : false"
 						></el-input>
 					</el-col>
@@ -68,18 +69,18 @@
 				</el-form-item>
         <el-form-item label="年龄:" prop="age" :label-width="formLabelWidth">
           <el-col :span="14">
-            <el-input 
-              v-model="form.age" 
-              autocomplete="off" 
+            <el-input
+              v-model="form.age"
+              autocomplete="off"
               disabled
             ></el-input>
           </el-col>
         </el-form-item>
         <el-form-item label="电话:" prop="phone" :label-width="formLabelWidth">
           <el-col :span="14">
-            <el-input 
-              v-model="form.phone" 
-              autocomplete="off" 
+            <el-input
+              v-model="form.phone"
+              autocomplete="off"
             ></el-input>
           </el-col>
         </el-form-item>

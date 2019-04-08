@@ -7,6 +7,7 @@ import store from './store'
 import elementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import _crypto from 'crypto'
+import './styles/font-style/iconfont.css'
 
 Vue.prototype.$crypto = _crypto;
 Vue.use(elementUi);

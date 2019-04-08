@@ -8,7 +8,7 @@
       </el-select>
       <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
     </div>
-    <el-table :data="seniorList" v-loading="loading" stripe style="width: 100%" border height="400">
+    <el-table :data="seniorList" v-loading="loading" stripe style="width: 100%" border max-height='360'>
       <el-table-column prop="name" label="姓名" align="center"></el-table-column>
       <el-table-column prop="age" label="年龄" align="center"></el-table-column>
       <el-table-column prop="gender" label="性别" align="center"></el-table-column>

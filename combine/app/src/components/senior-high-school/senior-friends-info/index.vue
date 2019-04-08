@@ -10,7 +10,7 @@
       border
       style="width: 100%"
       v-loading="loading"
-      height="400"
+      max-height='360'
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
       element-loading-background="rgba(0, 0, 0, 0.8)"

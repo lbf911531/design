@@ -3,11 +3,16 @@ const bodyParser = require('body-parser');
 const userRouter = require('./routes/userRouter');
 const primaryRouter = require('./routes/primaryRouter');
 const seniorRouter = require('./routes/seniorRoutes');
+const cookieParser = require('cookie-parser');
+
 let app = express();
 // 使用body-parser中间件
 app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.urlencoded({ extended: false} ));
+// 使用cookie
+app.use(cookieParser());
+
 // 处理跨域
 app.all('*',function(req,resp,next){
 	resp.set({
@@ -20,7 +25,7 @@ app.all('*',function(req,resp,next){
 	//继续往下执行
 	next();
 });
-// app.use(userRouter);
+/*  */
 app.use('/user',userRouter);
 app.use('/primary',primaryRouter);
 app.use('/senior',seniorRouter);
