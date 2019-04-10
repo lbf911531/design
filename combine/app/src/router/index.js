@@ -67,9 +67,9 @@ const router = new Router({
                 component: JuniorBlacklist
               }
             ],
-            meta: {
-              requireAuth: true
-            }
+            // meta: {
+            //   requireAuth: true
+            // }
           },{
             path: '/senior-high-school',
             name: 'Senior',
@@ -115,9 +115,9 @@ const router = new Router({
                 component: UniversitySchool
               }
             ],
-            meta: {
-              requireAuth: true
-            }
+            // meta: {
+            //   requireAuth: true
+            // }
           },{
             path: '/forum',
             name: 'Forum',
@@ -156,7 +156,7 @@ router.beforeEach((to, from, next) => {
     if (token) { // 通过vuex state获取当前的token是否存在
       next()
     } else {
-      console.log('该页面需要登陆');
+      alert('该页面需要登陆');
       next({
         path: '/login'
         // query: {redirect: to.fullPath} // 将跳转的路由path作为参数，登录成功后跳转到该路由

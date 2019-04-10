@@ -8,7 +8,7 @@
       </el-select>
       <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
     </div>
-    <el-table :data="dataSource" v-loading="loading" stripe style="width: 100%" max-height="360">
+    <el-table :data="juniorsList" v-loading="loading" stripe style="width: 100%" max-height="360">
       <el-table-column prop="name" label="姓名" align="center"></el-table-column>
       <el-table-column prop="age" label="年龄" align="center"></el-table-column>
       <el-table-column prop="gender" label="性别" align="center"></el-table-column>
@@ -91,16 +91,6 @@ export default {
   data() {
     return {
       loading: false,
-      dataSource: [
-        {
-          id: "1001",
-          name: "test",
-          age: 16,
-          gender: "男",
-          birth: "2014-01-23",
-          relationship: "normal"
-        }
-      ], //表格数据源
       searchName: "", //查询字符串
       searchSex: "",
       dialogTitle: "新增同学信息", //模态框标题
@@ -112,37 +102,39 @@ export default {
         sex: [{ required: true, message: "请选择", trigger: "blur" }],
         birth: [{ required: true, message: "请选择", trigger: "blur" }],
         contactWay: [
-          { type: "number", message: "QQ号必须为数字值", trigger: "blur" },
-          { pattern: /^\d{8,}$/, message: "QQ号最少八位", trigger: "blur" }
+          { pattern: /^\d{8,}$/, message: "QQ号最少为八位数字", trigger: "blur" }
         ],
         relationship: [{ required: true, message: "请选择", trigger: "blur" }]
       }
     };
   },
   computed: {
-    // ...mapGetters(['primarys']),
-    // 	priamryList() {
-    //    const that = this;
-    // return this.primarys.filter(function(item){
-    // 	if(item.name){
-    // 		return item.name.indexOf(that.searchName) !== -1 && item.sex.indexOf(that.searchSex) !== -1;
-    // 	}	else return false;
-    // });
-    //  }
+    ...mapGetters(["juniors"]),
+    juniorsList() {
+      const that = this;
+      return this.juniors.filter(function(item) {
+        if (item.name) {
+          return (
+            item.name.indexOf(that.searchName) !== -1 &&
+            item.sex.indexOf(that.searchSex) !== -1
+          );
+        } else return false;
+      });
+    }
   },
   created() {
-    // this.loading = true;
-    // const that = this;
-    // this.findAllJuniorOverData()
-    //   .then(data => {
-    //   	that.loading = false;
-    //   })
-    //   .catch(err => {
-    //   	that.loading = false;
-    //   		that.$message.error({
-    //         message: '获取数据失败:'+err,
-    //       });
-    //   })
+    this.loading = true;
+    const that = this;
+    this.findAllJuniorOverData()
+      .then(data => {
+        that.loading = false;
+      })
+      .catch(err => {
+        that.loading = false;
+        that.$message.error({
+          message: "获取数据失败:" + err
+        });
+      });
   },
   methods: {
     ...mapActions(["findAllJuniorOverData", "saveOrEditJuniorData"]),

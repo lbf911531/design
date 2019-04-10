@@ -22,7 +22,7 @@ export default {
     //获取初中列表信息
     findAllJuniorOverData(context) {
    	  return new Promise((resolve,reject)=>{
-        axios.get('/junior/findAll')
+        axios.get('/junior/data/find/all')
           .then(({data})=>{
            	context.commit('changeJuniors',data);
             resolve(data.data);
@@ -35,7 +35,7 @@ export default {
     //add or edit
     saveOrEditJuniorData(context,obj) {
       return new Promise((resolve,reject)=>{
-        axios.post('/junior/saveOrUpdate',qs.stringify(obj))
+        axios.post('/junior/data/save/or/update',qs.stringify(obj))
           .then(function(param){
             resolve(param);
           })
@@ -47,7 +47,7 @@ export default {
     //find junior friend
     findAllJuniorFriendsData(context) {
       return new Promise((resolve,reject)=>{
-        axios.get('/junior/findFriends')
+        axios.get('/junior/data/find/friends')
           .then(({data})=>{
             context.commit('changeJuniorFs',data);
             resolve(data.data);
@@ -60,7 +60,7 @@ export default {
     // change relationship
     changeRelationship(context,obj) {
       return new Promise((resolve,reject)=>{
-        axios.post('/junior/deleteFriends',{params: {id: obj.id}})
+        axios.post('/junior/data/delete/friends',{params: {id: obj.id}})
           .then(function(param){
             resolve(param);
           })

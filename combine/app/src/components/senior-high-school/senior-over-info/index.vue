@@ -7,10 +7,24 @@
         <el-option label="女" value="女"></el-option>
       </el-select>
       <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+      <el-button
+        plain
+        @click="handleBatchDel"
+        :disabled="this.multipleSelection.length > 0 ? false : true"
+      >删除</el-button>
     </div>
-    <el-table :data="seniorList" v-loading="loading" stripe style="width: 100%" border max-height='360'>
+    <el-table
+      :data="seniorList"
+      v-loading="loading"
+      stripe
+      style="width: 100%"
+      border
+      max-height="360"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
       <el-table-column prop="name" label="姓名" align="center"></el-table-column>
-      <el-table-column prop="age" label="年龄" align="center"></el-table-column>
+      <el-table-column prop="age" label="年龄" align="center" sortable></el-table-column>
       <el-table-column prop="gender" label="性别" align="center"></el-table-column>
       <el-table-column prop="phone" label="电话" align="center"></el-table-column>
       <el-table-column prop="contactWay" label="QQ号" align="center"></el-table-column>
@@ -20,7 +34,7 @@
           <el-tag
             :type="scope.row.relationship === 'friend' ? 'danger' : (scope.row.relationship === 'normal' ? 'success' : 'warning')"
             disable-transitions
-          >{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '同友')}}</el-tag>
+          >{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '同级同友')}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center">
@@ -82,7 +96,6 @@
             <el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
               <el-option label="好友" value="friend"></el-option>
               <el-option label="普通" value="normal"></el-option>
-              <el-option label="同友" value="other"></el-option>
             </el-select>
           </el-col>
         </el-form-item>
@@ -124,7 +137,8 @@ export default {
           { pattern: /^\d{8,}$/, message: "QQ号最少八位数字", trigger: "blur" }
         ],
         relationship: [{ required: true, message: "请选择", trigger: "blur" }]
-      }
+      },
+      multipleSelection: [] // 多选
     };
   },
   computed: {
@@ -164,7 +178,8 @@ export default {
     ...mapActions([
       "findAllSeniorOverData",
       "saveSeniorData",
-      "updateSeniorData"
+      "updateSeniorData",
+      "batchDelSeniorOverData"
     ]),
     //打开新增模态框
     openDialogToAdd() {
@@ -202,7 +217,6 @@ export default {
             messageValue = "新增数据成功";
             handleMethod = that.saveSeniorData;
           }
-          console.log(that.form);
           handleMethod &&
             handleMethod(that.form)
               .then(res => {
@@ -243,6 +257,44 @@ export default {
     handleCancleDialog() {
       this.formVisible = false;
       this.form = {};
+    },
+    // 多选行数据
+    handleSelectionChange(values) {
+      this.multipleSelection = values;
+    },
+    // 批量删除
+    handleBatchDel() {
+      const that = this;
+      this.$confirm("是否删除勾选数据", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          const temp = this.multipleSelection.map(item => item.id);
+          const params = { ids: String(temp) };
+          this.batchDelSeniorOverData(params)
+            .then(res => {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              that.findAllSeniorOverData();
+              this.multipleSelection = [];
+            })
+            .catch(err => {
+              this.$message({
+                type: "error",
+                message: err
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   }
 };

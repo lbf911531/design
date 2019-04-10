@@ -5,8 +5,8 @@
     <el-card>
       <el-tabs v-model="seniorActive" type="card" @tab-click="handleClick">
         <el-tab-pane label="同班同学" name="senior-over-info"></el-tab-pane>
-        <el-tab-pane label="深交好友" name="senior-friends-info"></el-tab-pane>
-        <el-tab-pane label="同级同友" name="senior-other-info"></el-tab-pane>
+        <el-tab-pane label="同班好友" name="senior-friends-info"></el-tab-pane>
+        <el-tab-pane label="同级朋友" name="senior-other-info"></el-tab-pane>
         <el-tab-pane label="与师为友" name="senior-teachers-info"></el-tab-pane>
       </el-tabs>
       <router-view></router-view>

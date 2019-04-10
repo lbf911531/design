@@ -13,7 +13,9 @@
               active-text-color="#ffd04b"
               :collapse="isCollapse"
             >
-              <div class="top-tip">logo</div>
+              <div class="top-logo">
+                <div class="top-logo-container"></div>
+              </div>
               <el-menu-item index="/homepage">
                 <i class="el-icon-share"></i>
                 <span slot="title">首页</span>
@@ -94,12 +96,21 @@ div {
 .home {
   background-size: cover;
 }
-.left-nav .top-tip {
-  background-color: rgba(43, 47, 50, 0.8);
+.left-nav .top-logo {
+  background-color: rgba(43, 47, 50, .8);
   height: 100px;
   text-align: center;
   color: #fff;
   margin-bottom: 20px;
+}
+.top-logo {
+  background-color: rgb(0,0,0);
+}
+.top-logo-container {
+  background: url("../../images/logo.png") center no-repeat;
+  background-size: cover;
+  height: inherit;
+  opacity: 0.6;
 }
 .left-nav .menu-list {
   height: 100vh;
@@ -112,7 +123,7 @@ div {
   line-height: 40px;
   text-align: center;
   font-size: 18px;
-  background-color: rgba(7, 161, 103, 0.7);
+  background-color: rgba(7, 161, 103, .7);
   position: absolute;
   bottom: 0;
   z-index: 20;

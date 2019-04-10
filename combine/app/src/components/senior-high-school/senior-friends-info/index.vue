@@ -2,6 +2,10 @@
   <div class="seniorFriendsInfo">
     <div class="option-div">
       <el-input v-model="search" placeholder="请输入姓名" clearable suffix-icon="el-icon-search"></el-input>
+        <el-select v-model="searchSex" placeholder="请选择性别" clearable>
+        <el-option label="男" value="男"></el-option>
+        <el-option label="女" value="女"></el-option>
+      </el-select>
       <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
     </div>
     <el-table
@@ -16,8 +20,8 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
     >
       <el-table-column prop="name" label="姓名" align="center"></el-table-column>
-      <el-table-column prop="age" label="年龄" align="center" width="60px"></el-table-column>
-      <el-table-column prop="gender" label="性别" align="center" width="60px"></el-table-column>
+      <el-table-column prop="age" label="年龄" align="center" width="80px" sortable></el-table-column>
+      <el-table-column prop="gender" label="性别" align="center" width="80px"></el-table-column>
       <el-table-column prop="birth" label="出生年月" align="center"></el-table-column>
       <el-table-column prop="relationship" label="关系" align="center" width="140px">
         <template>
@@ -26,7 +30,7 @@
       </el-table-column>
       <el-table-column prop="phone" label="电话" align="center"></el-table-column>
       <el-table-column prop="contactWay" label="QQ号" align="center"></el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -120,6 +124,7 @@ export default {
     return {
       loading: false,
       search: "", //查询字符串
+      searchSex: "",
       dialogTitle: "新增同学信息", //模态框标题
       formVisible: false, // 模态框可见
       form: {}, //表单数据
@@ -137,7 +142,7 @@ export default {
           }
         ],
         contactWay: [
-          { pattern: /^\d{8,}$/, message: "QQ号最少八位", trigger: "blur" }
+          { pattern: /^\d{8,}$/, message: "QQ号最少为八位数字", trigger: "blur" }
         ],
         relationship: [{ required: true, message: "请选择", trigger: "blur" }]
       }, //校验规则
@@ -154,7 +159,7 @@ export default {
         this.seniorFriendsList instanceof Array &&
         this.seniorFriendsList.filter(function(item) {
           if (item.name) {
-            return item.name.indexOf(that.search) !== -1;
+            return item.name.indexOf(that.search) !== -1 && item.gender.indexOf(that.searchSex) !== -1;
           } else return false;
         })
       );
@@ -163,7 +168,7 @@ export default {
   created() {
     this.loading = true;
     const that = this;
-    this.findSeniorFriendsData()
+    this.findSeniorDataByRelationship('friend')
       .then(data => {
         that.loading = false;
       })
@@ -176,7 +181,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      "findSeniorFriendsData",
+      "findSeniorDataByRelationship",
       "saveSeniorData",
       "updateSeniorData"
     ]),
@@ -224,7 +229,7 @@ export default {
                   message: messageValue,
                   type: "success"
                 });
-                that.findSeniorFriendsData();
+                that.findSeniorDataByRelationship('friend');
                 that.formVisible = false;
                 that.loading = false;
                 that.form = {};
@@ -267,7 +272,6 @@ export default {
     confirmToChangeRel() {
       const that = this;
       this.tipForm.relationship = "normal";
-      console.log(this.tipForm);
       this.updateSeniorData(this.tipForm)
         .then(res => {
           that.$message({
@@ -275,7 +279,7 @@ export default {
             message: "很遗憾，" + this.tipForm.name + " 同学不再是您的好友",
             type: "success"
           });
-          that.findSeniorFriendsData();
+          that.findSeniorDataByRelationship('friend');
           that.tipVisible = false;
           that.tipForm = {};
         })

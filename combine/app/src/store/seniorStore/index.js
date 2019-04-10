@@ -66,23 +66,10 @@ export default {
           })
       });
     },
-    //get friend value
-    findSeniorFriendsData(context) {
+    // batch delete
+    batchDelSeniorOverData(context, arr) {
       return new Promise((resolve,reject)=>{
-        axios.get('/senior/data/find/by/relationship?relationship=friend')
-          .then(({data})=>{
-            context.commit('changeSeniorsFriendsList',data);
-            resolve(data.data);
-          })
-          .catch((err)=>{
-            reject(err);
-          });
-      });
-    },
-     //add or edit
-    saveOrEditSeniorFriendsData(context,obj) {
-      return new Promise((resolve,reject)=>{
-        axios.post('/senior/saveOrUpdateFriendsList',qs.stringify(obj))
+        axios.post('/senior/data/delete/batch',qs.stringify(arr))
           .then(function(param){
             resolve(param);
           })
@@ -91,35 +78,35 @@ export default {
           })
       });
     },
-    //get other value
-    findSeniorOthersData(context) {
-      return new Promise((resolve,reject)=>{
-        axios.get('/senior/findOthersList')
-          .then(({data})=>{
-            context.commit('changeSeniorsOthersList',data);
-            resolve(data.data);
-          })
-          .catch((err)=>{
-            reject(err);
-          });
-      });
+    //get value by relationship
+    findSeniorDataByRelationship(context,rel) {
+      let commitStr = "";
+      if(rel) {
+        switch(rel) {
+          case 'friend' :
+          commitStr = "changeSeniorsFriendsList";
+          break;
+          case 'slFriend':
+          commitStr = "changeSeniorsOthersList";
+          break;
+          default: break;
+        }
+        return new Promise((resolve,reject)=>{
+          axios.get(`/senior/data/find/by/relationship?relationship=${rel}`)
+            .then(({data})=>{
+              context.commit(commitStr,data);
+              resolve(data.data);
+            })
+            .catch((err)=>{
+              reject(err);
+            });
+        });
+      }
     },
-     //add or edit
-    saveOrEditSeniorOthersData(context,obj) {
+    // 查询老师信息
+    findTeachersData(context) {
       return new Promise((resolve,reject)=>{
-        axios.post('/senior/saveOrUpdateOthersList',qs.stringify(obj))
-          .then(function(param){
-            resolve(param);
-          })
-          .catch(function(error){
-            reject(error);
-          })
-      });
-    },
-    //get teacher value
-    findSeniorTeachersData(context) {
-      return new Promise((resolve,reject)=>{
-        axios.get('/senior/data/find/by/relationship?relationship=teacher')
+        axios.get('/senior/data/find/teacher')
           .then(({data})=>{
             context.commit('changeSeniorsTeachersList',data);
             resolve(data.data);
@@ -127,12 +114,12 @@ export default {
           .catch((err)=>{
             reject(err);
           });
-      });
+   	  });
     },
-     //add or edit
-    saveOrEditSeniorTeachersData(context,obj) {
+    // 新增教师信息
+    saveTeachersData(context, obj) {
       return new Promise((resolve,reject)=>{
-        axios.post('/senior/saveOrUpdateTeachersList',qs.stringify(obj))
+        axios.post('/senior/data/teacher/new',qs.stringify(obj))
           .then(function(param){
             resolve(param);
           })
@@ -141,6 +128,30 @@ export default {
           })
       });
     },
+    // 更新教师信息
+    updateTeachersData(context, obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/senior/data/teacher/update',qs.stringify(obj))
+          .then(function(param){
+            resolve(param);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
+    },
+    // 批量删除教师信息
+    batchDelTeachersData(context, arr) {
+      return new Promise((resolve,reject)=>{
+				axios.post('/senior/data/delete/batch/teacher',qs.stringify(arr))
+				  .then(function(param){
+            resolve(param);
+				  })
+				  .catch(function(error){
+            reject(error);
+				  })
+			});
+    }
 	}
 }
 /**
