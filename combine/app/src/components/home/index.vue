@@ -8,7 +8,7 @@
               router
               default-active="/homepage"
               class="el-menu-vertical-demo menu-list"
-              background-color="#545c64"
+              background-color="rgba(0,0,0,.5)"
               text-color="#fff"
               active-text-color="#ffd04b"
               :collapse="isCollapse"
@@ -94,6 +94,8 @@ div {
   color: #333;
 }
 .home {
+  height: 100vh;
+  background: url("../../images/main-bg.jpg") 0 0 no-repeat;
   background-size: cover;
 }
 .left-nav .top-logo {
@@ -119,11 +121,15 @@ div {
 .left-nav .el-menu-item span {
   margin: 0 14px;
 }
+.left-nav .el-menu-item {
+  background: none !important;
+}
 .foot-copy {
   line-height: 40px;
   text-align: center;
   font-size: 18px;
-  background-color: rgba(7, 161, 103, .7);
+  background: radial-gradient(ellipse at center, #0a2e38 0%, #000000 70%);
+  color: #fff;
   position: absolute;
   bottom: 0;
   z-index: 20;
@@ -133,18 +139,19 @@ div {
   padding: 5px 10px;
   height: 46px;
   box-sizing: border-box;
-  box-shadow: 0px 0px 5px #000 inset;
-  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15) inset;
+  background-color: rgba(0,0,0,.35);
 }
 .user-bar .col-btn {
   font-weight: 600;
   line-height: 36px;
   cursor: pointer;
+  color: #fff;
   margin-left: 20px;
 }
 .right-contanier {
   height: 100vh;
-  background: url("../../images/bg.jpg") 0 0 no-repeat;
+  /* background: url("../../images/bg.jpg") 0 0 no-repeat; */
   background-size: cover;
 }
 .right-contanier .right-view{
