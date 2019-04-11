@@ -3,15 +3,15 @@
 		<div class="quote">当筵意气凌九霄，星离雨散不终朝。</div>
 		<div class="divide-line"></div>
 	  <div class="option-div">
-			<el-input 
-				v-model="search" 
-				placeholder="请输入姓名" 
+			<el-input
+				v-model="search"
+				placeholder="请输入姓名"
 				clearable
 				suffix-icon="el-icon-search"
 			></el-input>
 			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
 		</div>
-		<el-table :data="priamryList" stripe style="width: 100%"> 
+		<el-table :data="priamryList" stripe style="width: 100%" max-height="320">
 	    <el-table-column prop="name" label="姓名" align="center">
 	    </el-table-column>
 	    <el-table-column prop="age" label="年龄" align="center">
@@ -22,7 +22,7 @@
 	    </el-table-column>
 	    <el-table-column prop="relationship" label="关系" align="center">
 	    	<template slot-scope="scope">
-	    		<el-tag 
+	    		<el-tag
 	    			:type="scope.row.relationship !== 'normal' ? 'warning' : 'success'"
           	disable-transitions
         	>
@@ -32,11 +32,11 @@
 	    </el-table-column>
 			<el-table-column label="操作" align="center">
 	      <template slot-scope="scope">
-	        <el-button 
-	        	size="mini" 
-	        	type="info" 
+	        <el-button
+	        	size="mini"
+	        	type="info"
 	        	@click="handleEdit(scope.$index, scope.row)"
-        	  icon="el-icon-edit" 
+        	  icon="el-icon-edit"
       	  >编辑</el-button>
 	      </template>
 	    </el-table-column>
@@ -45,9 +45,9 @@
 		  <el-form :model="primaryForm" :rules="rules" ref="primaryForm">
 		    <el-form-item label="姓名:" prop="name" :label-width="formLabelWidth">
 	    	 	<el-col :span="14">
-						<el-input 
-							v-model="primaryForm.name" 
-							autocomplete="off" 
+						<el-input
+							v-model="primaryForm.name"
+							autocomplete="off"
 							:disabled="this.primaryForm.name && this.primaryForm.id ? true : false"
 						></el-input>
 					</el-col>
@@ -60,8 +60,8 @@
 				  </el-form-item>
 		    <el-form-item label="出生年月:" prop="birth" :label-width="formLabelWidth">
 		    	<el-col :span="14">
-	        	<el-date-picker 
-	         		type="date" 
+	        	<el-date-picker
+	         		type="date"
 	         		placeholder="选择日期"
 	         		v-model="primaryForm.birth"
 	         		style="width: 100%;"
@@ -103,7 +103,7 @@ export default {
       	name: [
           { required: true, message: '请输入', trigger: 'blur' }
         ],
-        sex: [
+        gender: [
           { required: true, message: '请选择', trigger: 'blur' }
         ],
         birth: [

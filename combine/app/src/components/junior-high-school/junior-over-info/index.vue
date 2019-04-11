@@ -6,30 +6,60 @@
         <el-option label="男" value="男"></el-option>
         <el-option label="女" value="女"></el-option>
       </el-select>
+      <el-button
+        plain
+        @click="handleBatchDel"
+        :disabled="this.multipleSelection.length > 0 ? false : true"
+      >删除</el-button>
       <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
     </div>
-    <el-table :data="juniorsList" v-loading="loading" stripe style="width: 100%" max-height="360">
-      <el-table-column prop="name" label="姓名" align="center"></el-table-column>
-      <el-table-column prop="age" label="年龄" align="center"></el-table-column>
-      <el-table-column prop="gender" label="性别" align="center"></el-table-column>
-      <el-table-column prop="birth" label="出生年月" align="center"></el-table-column>
-      <el-table-column prop="contactWay" label="QQ号" align="center"></el-table-column>
-      <el-table-column prop="relationship" label="关系" align="center">
+    <div>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[5,10,20,30]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        style="float: right"
+      ></el-pagination>
+    </div>
+    <el-table
+      :data="juniorsList"
+      v-loading="loading"
+      stripe
+      style="width: 100%"
+      max-height="320"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table-column prop="name" label="姓名" align="center" width="150px"></el-table-column>
+      <el-table-column prop="age" label="年龄" align="center" sortable width="150px"></el-table-column>
+      <el-table-column prop="gender" label="性别" align="center" width="150px"></el-table-column>
+      <el-table-column prop="birth" label="出生年月" align="center" width="150px"></el-table-column>
+      <el-table-column prop="contactWay" label="QQ号" align="center" width="150px"></el-table-column>
+      <el-table-column prop="relationship" label="关系" align="center" width="150px">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.relationship !== 'normal' ? 'warning' : (scope.row.relationship === 'normal' ? 'success' : 'info')"
             disable-transitions
-          >{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '厌者')}}</el-tag>
+          >{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '黑名单')}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" fixed="right" width="200px">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button
             size="mini"
-            type="info"
-            @click="handleEdit(scope.$index, scope.row)"
-            icon="el-icon-edit"
-          >编辑</el-button>
+            type="text"
+            @click="handleToChangeRel(scope.$index, scope.row, 'friend')"
+          >加入好友栏</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            @click="handleToChangeRel(scope.$index, scope.row, 'blacklist')"
+          >加入黑名单</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -65,15 +95,6 @@
             <el-input v-model="form.contactWay" autocomplete="off"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="关系:" prop="relationship" :label-width="formLabelWidth">
-          <el-col :span="14">
-            <el-select v-model="form.relationship" placeholder="请选择" style="width: 100%;">
-              <el-option label="好友" value="friend"></el-option>
-              <el-option label="普通" value="normal"></el-option>
-              <el-option label="黑名单" value="bore"></el-option>
-            </el-select>
-          </el-col>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleCancleDialog">取 消</el-button>
@@ -99,45 +120,68 @@ export default {
       formLabelWidth: "100px",
       rules: {
         name: [{ required: true, message: "请输入", trigger: "blur" }],
-        sex: [{ required: true, message: "请选择", trigger: "blur" }],
-        birth: [{ required: true, message: "请选择", trigger: "blur" }],
+        gender: [{ required: true, message: "请选择", trigger: "blur" }],
         contactWay: [
-          { pattern: /^\d{8,}$/, message: "QQ号最少为八位数字", trigger: "blur" }
-        ],
-        relationship: [{ required: true, message: "请选择", trigger: "blur" }]
-      }
+          {
+            pattern: /^\d{8,}$/,
+            message: "QQ号最少为八位数字",
+            trigger: "blur"
+          }
+        ]
+      },
+      multipleSelection: [], // 多选
+      pageSize: 5,
+      total: 0,
+      currentPage: 1
     };
   },
   computed: {
-    ...mapGetters(["juniors"]),
+    ...mapGetters(["juniors","juniorOverList"]),
     juniorsList() {
       const that = this;
-      return this.juniors.filter(function(item) {
-        if (item.name) {
-          return (
-            item.name.indexOf(that.searchName) !== -1 &&
-            item.sex.indexOf(that.searchSex) !== -1
-          );
-        } else return false;
-      });
+      return (
+        this.juniors instanceof Array &&
+        this.juniors.filter(function(item) {
+          if (item.name) {
+            return (
+              item.name.indexOf(that.searchName) !== -1 &&
+              item.gender.indexOf(that.searchSex) !== -1
+            );
+          } else return false;
+        })
+      );
     }
   },
   created() {
-    this.loading = true;
-    const that = this;
-    this.findAllJuniorOverData()
-      .then(data => {
-        that.loading = false;
-      })
-      .catch(err => {
-        that.loading = false;
-        that.$message.error({
-          message: "获取数据失败:" + err
-        });
-      });
+    this.getJuniorValueList();
   },
   methods: {
-    ...mapActions(["findAllJuniorOverData", "saveOrEditJuniorData"]),
+    ...mapActions([
+      "findAllJuniorOverData",
+      "saveOrEditJuniorData",
+      "changeRelationship",
+      "batchDelJuniorOverData"
+    ]),
+    // 获取数据源
+    getJuniorValueList() {
+      this.loading = true;
+      const that = this;
+      const params = {
+        pageSize: that.pageSize,
+        currentPage: that.currentPage
+      };
+      this.findAllJuniorOverData(params)
+        .then(data => {
+          that.loading = false;
+          that.total = that.juniorOverList.length;
+        })
+        .catch(err => {
+          that.loading = false;
+          that.$message.error({
+            message: "获取数据失败:" + err
+          });
+        });
+    },
     //打开新增模态框
     openDialogToAdd() {
       this.form = {
@@ -167,16 +211,15 @@ export default {
           let year = parseFloat(new Date().getFullYear());
           let age = year - parseFloat(String(that.form.birth).split("-")[0]);
           that.form.age = age;
-          return;
           that
-            .saveOrEditJuniorOverData(that.form)
+            .saveOrEditJuniorData(that.form)
             .then(res => {
               that.$notify({
                 title: "成功",
                 message: messageValue,
                 type: "success"
               });
-              that.findAllJuniorOverData();
+              that.getJuniorValueList();
               that.formVisible = false;
             })
             .catch(err => {
@@ -206,6 +249,88 @@ export default {
     handleCancleDialog() {
       this.formVisible = false;
       this.form = {};
+    },
+    // 改变关系
+    handleToChangeRel(index, row, rel) {
+      const tipMsg = rel === "friend" ? "好友列单" : "黑名单";
+      this.$confirm(`是否将 ${row.name} 加入 ${tipMsg}`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info"
+      })
+        .then(() => {
+          const params = {
+            id: row.id,
+            relationship: rel
+          };
+          this.changeRelationship(params)
+            .then(res => {
+              this.$message({
+                type: "success",
+                message: "移入成功"
+              });
+              this.getJuniorValueList();
+            })
+            .catch(err => {
+              this.$message({
+                type: "error",
+                message: err
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消操作"
+          });
+        });
+    },
+    // 多选行数据
+    handleSelectionChange(values) {
+      this.multipleSelection = values;
+    },
+    // 批量删除
+    handleBatchDel() {
+      const that = this;
+      this.$confirm("是否删除勾选数据", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          const temp = this.multipleSelection.map(item => item.id);
+          const params = { ids: String(temp) };
+          this.batchDelJuniorOverData(params)
+            .then(res => {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              that.currentPage = 1;
+              that.getJuniorValueList();
+              that.multipleSelection = [];
+            })
+            .catch(err => {
+              this.$message({
+                type: "error",
+                message: err
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    handleSizeChange(val) {
+      this.pageSize = val || 5;
+      this.getJuniorValueList();
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val || 1;
+      this.getJuniorValueList();
     }
   }
 };

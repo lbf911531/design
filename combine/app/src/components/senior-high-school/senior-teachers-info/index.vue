@@ -20,7 +20,7 @@
       stripe
       style="width: 100%"
       border
-      max-height="360"
+      max-height="320"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -113,7 +113,7 @@ export default {
       formLabelWidth: "100px",
       rules: {
         name: [{ required: true, message: "请输入", trigger: "blur" }],
-        sex: [{ required: true, message: "请选择", trigger: "blur" }],
+        gender: [{ required: true, message: "请选择", trigger: "blur" }],
         age: [
           {
             pattern: /^[1-9]+[0-9]{1,2}$/,

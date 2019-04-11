@@ -14,7 +14,7 @@
       border
       style="width: 100%"
       v-loading="loading"
-      max-height='360'
+      max-height='320'
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
       element-loading-background="rgba(0, 0, 0, 0.8)"
@@ -131,7 +131,7 @@ export default {
       formLabelWidth: "100px",
       rules: {
         name: [{ required: true, message: "请输入", trigger: "blur" }],
-        sex: [{ required: true, message: "请选择", trigger: "blur" }],
+        gender: [{ required: true, message: "请选择", trigger: "blur" }],
         birth: [{ required: true, message: "请选择", trigger: "blur" }],
         age: [{ type: "number", message: "年龄必须为数字值", trigger: "blur" }],
         phone: [

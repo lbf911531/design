@@ -219,7 +219,7 @@ export default {
           this.toLogin(params)
             .then(res => {
               this.isLoading = false;
-              if (res === true) {
+              if (res.flag === true) {
                 this.$router.push("/homepage");
               }
             })
@@ -227,7 +227,7 @@ export default {
               this.isLoading = false;
               this.$message.error({
                 title: "失败",
-                message: err
+                message: err+'或是账号或密码不正确'
               });
             });
         } else {

@@ -4,10 +4,11 @@ import qs from 'qs';
 export default {
   state: {
     user: window.sessionStorage.getItem('user'),
-    token: window.sessionStorage.getItem('token')
+    token: window.sessionStorage.getItem('token'),
+    userInfo: {},
   },
   getters: {
-
+    userInfo: state => state.userInfo
   },
   mutations: {
     //将token保存到sessionStorage里，token表示登陆状态
@@ -28,6 +29,9 @@ export default {
       state.user = null
       window.sessionStorage.removeItem('token')
       window.sessionStorage.removeItem('user')
+    },
+    changeUserInfo(state,data) {
+      state.userInfo = data;
     }
   },
   actions: {
@@ -37,6 +41,7 @@ export default {
           .then(({data})=>{
             context.commit('SET_TOKEN',data.token);
             context.commit('GET_USER',data.user);
+            context.commit('changeUserInfo',data.res[0] || {});
             resolve(data);
           })
           .catch((err)=>{
