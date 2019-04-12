@@ -2,7 +2,7 @@
   <div class="homepage">
     <el-row class="top-row">
       <el-col :span="8" class="top-ele-box-one">
-        <el-card class="card-height">
+        <el-card class="card-height card-height-254">
           <div slot="header" class="clearfix">
             <span>基本信息</span>
           </div>
@@ -34,8 +34,8 @@
         </el-card>
       </el-col>
       <el-col :span="8">
-        <el-card class="card-height" :body-style="{ padding: '5px' }">
-          <el-carousel :interval="5000" arrow="always" height="230px">
+        <el-card class="card-height card-height-254" :body-style="{ padding: '5px' }">
+          <el-carousel :interval="5000" arrow="always" height="244px">
             <el-carousel-item v-for="item in imgArr" :key="item.id">
               <img :src="item.idView" alt="图" class="imgStyle">
             </el-carousel-item>
@@ -43,24 +43,86 @@
         </el-card>
       </el-col>
       <el-col :span="8" class="top-ele-box-two">
-        <el-card class="card-height" :body-style="{ padding: '5px' }">
-          <x-chart :id="id" :option="options"></x-chart>
+        <el-card class="card-height card-height-300" :body-style="{ padding: '3px' }">
+          <Calendar/>
         </el-card>
       </el-col>
     </el-row>
     <el-row class="bottom-row">
       <el-col :span="12" class="bottom-ele-box">
-        <el-card class="card-height" :body-style="{ padding: '5px' }"></el-card>
+        <el-card class="card-height card-height-226 relative-box">
+          <el-row class="panel-box-fir">
+            <el-col :span="10">
+              <div class="panel panel-admin">
+                <div class="panel-body">
+                  <el-col :span="8">
+                    <i class="el-icon-edit-outline"></i>
+                  </el-col>
+                  <el-col :span="14">
+                    <p>管理员人数：</p>
+                    <h4>{{adminLength}}</h4>
+                  </el-col>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="12" class="panel-tip">
+              管理员：拥有对数据操作的权限，同时可以分配权限
+              <!-- 组件弹框设置权限 勾选 -->
+            </el-col>
+          </el-row>
+          <el-row class="panel-box-sec">
+            <el-col :span="10">
+              <div class="panel panel-normal">
+                <div class="panel-body">
+                  <el-col :span="8">
+                    <i class="el-icon-view"></i>
+                  </el-col>
+                  <el-col :span="14">
+                    <p>普通用户人数：</p>
+                    <h4>{{normalLength}}</h4>
+                  </el-col>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="12" class="panel-tip">普通用户：仅可阅览数据</el-col>
+          </el-row>
+          <div class="oper-box">
+            <el-tooltip effect="dark" content="分配管理员权限" placement="top-start">
+              <el-button icon="el-icon-sort" circle type="info" @click="dialogTableVisible = true"></el-button>
+            </el-tooltip>
+          </div>
+        </el-card>
       </el-col>
       <el-col :span="12" class="bottom-ele-box">
-        <el-card class="card-height" :body-style="{ padding: '5px' }"></el-card>
+        <el-card class="card-height card-height-226 diy-box" :body-style="{ padding: '5px' }">
+        </el-card>
       </el-col>
     </el-row>
+    <el-dialog title="权限分配" :visible.sync="dialogTableVisible">
+      <div>
+        <el-row>
+          <el-col :span="6">
+            <el-input v-model="search" placeholder="请输入姓名" clearable suffix-icon="el-icon-search"></el-input>
+          </el-col>
+        </el-row>
+      </div>
+      <el-table :data="normalValueList" @selection-change="handleSelectionChange" max-height="320">
+        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        <el-table-column property="name" label="用户名" align="center"></el-table-column>
+        <el-table-column property="phone" label="电话" align="center"></el-table-column>
+        <el-table-column property="gender" label="性别" align="center"></el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogTableVisible = false">取 消</el-button>
+        <el-button type="primary" @click="assignPermissions">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
-import XChart from "@/components/hightcharts/chart.vue";
+import { mapGetters, mapActions } from "vuex";
+import Calendar from "vue-calendar-component";
+
 export default {
   data() {
     return {
@@ -70,59 +132,115 @@ export default {
         { id: 2, idView: require("../../images/3.jpg") },
         { id: 3, idView: require("../../images/4.jpg") }
       ],
-      id: "chart",
-      options: {
-        chart: {
-          type: "column" //指定图表的类型，默认是折线图（line）
-        },
-        credits: {
-          enabled: false
-        }, //去掉地址
-        title: {
-          text: "我的第一个图表" //指定图表标题
-        },
-        colors: ["#058DC7", "#50B432", "#ED561B", "#DDDF00", "#24CBE5"],
-        xAxis: {
-          categories: ["1号", "2号", "3号", "3号", "3号"] //指定x轴分组
-        },
-        yAxis: {
-          title: {
-            text: "最近七天" //指定y轴的标题
-          }
-        },
-        plotOptions: {
-          column: {
-            colorByPoint: true
-          }
-        },
-
-        series: [
-          {
-            //指定数据列
-            name: "小明",
-            data: [
-              {
-                y: 1000,
-                color: "red"
-              },
-              5000,
-              4000,
-              5000,
-              2000
-            ] //数据
-          }
-        ]
-      }
+      dialogTableVisible: false,
+      search: "",
+      multipleSelection: [] // 多选
     };
   },
+  components: {
+    Calendar
+  },
+  created() {
+    this.findUserCollection();
+  },
   computed: {
-    ...mapGetters(["userInfo"])
+    ...mapGetters(["userInfo", "userCollection"]),
+    adminLength() {
+      const adminArr = [];
+      if (this.userCollection) {
+        this.userCollection.forEach(item => {
+          if (item.permission === "admin") {
+            adminArr.push(item);
+          }
+        });
+      }
+      return adminArr.length;
+    },
+    normalLength() {
+      const normalArr = [];
+      if (this.userCollection) {
+        this.userCollection.forEach(item => {
+          if (item.permission === "normal") {
+            normalArr.push(item);
+          }
+        });
+      }
+      return normalArr.length;
+    },
+    normalValueList() {
+      const that = this;
+      return (
+        this.userCollection &&
+        this.userCollection.filter(function(item) {
+          if (item.name) {
+            return (
+              item.name.indexOf(that.search) !== -1 &&
+              item.permission === "normal"
+            );
+          } else return false;
+        })
+      );
+    }
   },
   mounted() {},
-  components: {
-    XChart
-  },
-  methods: {}
+  methods: {
+    ...mapActions(["getUserCollection", "batchAssignPer"]),
+    // 查询所有用户
+    findUserCollection() {
+      this.getUserCollection()
+        .then(res => {})
+        .catch(err => {
+          this.$message({
+            type: "error",
+            message: err
+          });
+        });
+    },
+    // 多选行数据
+    handleSelectionChange(values) {
+      this.multipleSelection = values;
+    },
+    // 分配管理员权限
+    assignPermissions() {
+      const that = this;
+      this.$confirm("是否为勾选的对象分配管理员权限", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          const temp = this.multipleSelection.map(item => item.id);
+          const params = {
+            permission: "admin",
+            ids: String(temp)
+          };
+          that
+            .batchAssignPer(params)
+            .then(res => {
+              if (res) {
+                that.$message({
+                  type: "success",
+                  message: "分配成功"
+                });
+                that.findUserCollection();
+                that.multipleSelection = [];
+              }
+            })
+            .catch(err => {
+              that.$message({
+                type: "error",
+                message: err
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消分配"
+          });
+        });
+    }
+  }
 };
 </script>
 <style scoped>
@@ -135,9 +253,6 @@ export default {
 .top-ele-box-two {
   padding-left: 5px;
 }
-.bottom-row {
-  margin-top: 30px;
-}
 .bottom-ele-box {
   padding: 5px 10px;
 }
@@ -147,11 +262,31 @@ export default {
 .bottom-ele-box:nth-child(2) {
   padding-right: 0px;
 }
+.relative-box {
+  position: relative;
+}
+.oper-box {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.oper-box .el-button {
+  background-color: rgba(0, 0, 0, 0.4);
+}
 .card-height {
-  height: 240px;
   background: rgba(0, 0, 0, 0.6);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   color: #fff;
+}
+.card-height-254 {
+  height: 254px;
+}
+.card-height-226 {
+  height: 226px;
+}
+.card-height-300 {
+  height: 300px;
 }
 .userInfo {
   line-height: 24px;
@@ -159,5 +294,35 @@ export default {
 .imgStyle {
   width: 100%;
   height: 100%;
+}
+.panel-box-fir {
+  margin-bottom: 20px;
+}
+.panel {
+  padding: 15px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.panel-admin {
+  background-color: #fc8675;
+}
+.panel-normal {
+  background-color: #65cea7;
+}
+.panel-body::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.panel-body i {
+  font-size: 50px;
+}
+.panel-body p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+.panel-tip {
+  padding: 15px;
 }
 </style>

@@ -13,6 +13,10 @@
               active-text-color="#ffd04b"
               :collapse="isCollapse"
             >
+              <div class="top-title">
+                <img src="../../images/logos.jpg" alt="图">
+                <span v-if="!isCollapse">ALUMNI</span>
+              </div>
               <div class="top-logo">
                 <div class="top-logo-container"></div>
               </div>
@@ -46,6 +50,11 @@
             <div>
               <div class="user-bar">
                 <i class="iconfont icon-zhankai1 col-btn" @click="handleColleaspe"></i>
+                <div class="timer">{{curTime}}</div>
+                <div class="details">
+                  <img src="../../images/portrait-male.png" alt="头像" class="portrait-style">
+                  <span>{{this.userInfo && this.userInfo.name}}</span>
+                </div>
               </div>
               <div class="right-view">
                 <router-view></router-view>
@@ -61,13 +70,21 @@
 
 <script>
 import $ from "jquery";
+import moment from "moment";
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   data() {
     return {
       isCollapse: false,
       leftSpan: 4,
       rightSpan: 20,
+      timer: null,
+      curTime: "",
     };
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
   },
   mounted() {
     // 可以修改路由
@@ -77,12 +94,25 @@ export default {
       $(".left-nav").height($(window).height() - 40);
     });
     $(".left-nav").height($(window).height() - 40);
+    clearInterval(this.timer);
+    this.timer = null;
+    this.setTimer();
+  },
+  destroyed: function() {
+    // 每次离开当前界面时，清除定时器
+    clearInterval(this.timer);
+    this.timer = null;
   },
   methods: {
     handleColleaspe() {
-      this.isCollapse = ! this.isCollapse;
+      this.isCollapse = !this.isCollapse;
       this.leftSpan = this.isCollapse === true ? 1 : 4;
       this.rightSpan = this.isCollapse === true ? 23 : 20;
+    },
+    setTimer() {
+      let timer = setInterval(() => {
+        this.curTime = moment(Date.now()).format("YYYY-MM-DD dddd HH:mm:ss");
+      }, 1000);
     }
   }
 };
@@ -99,17 +129,27 @@ div {
   background-size: cover;
 }
 .left-nav .top-logo {
-  background-color: rgba(43, 47, 50, .8);
-  height: 100px;
+  background-color: rgba(43, 47, 50, 0.8);
+  height: 126px;
   text-align: center;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+.top-title {
+  padding-left: 10px;
+  padding-top: 10px;
+  height: 50px;
+  color: #fff;
+}
+.top-title span {
+  font-size: 24px;
+  padding-left: 7px;
 }
 .top-logo {
-  background-color: rgb(0,0,0);
+  background-color: rgb(0, 0, 0);
 }
 .top-logo-container {
-  background: url("../../images/logo.png") center no-repeat;
+  background: url("../../images/home-title.jpg") center no-repeat;
   background-size: cover;
   height: inherit;
   opacity: 0.6;
@@ -140,21 +180,54 @@ div {
   height: 46px;
   box-sizing: border-box;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15) inset;
-  background-color: rgba(0,0,0,.35);
+  background-color: rgba(0, 0, 0, 0.35);
+  color: #fff;
 }
 .user-bar .col-btn {
   font-weight: 600;
   line-height: 36px;
   cursor: pointer;
-  color: #fff;
   margin-left: 20px;
+}
+.user-bar .timer {
+  float: right;
+  line-height: 36px;
+  padding-right: 30px;
+  color: #fff;
+}
+.user-bar .details {
+  float: right;
+  margin-right: 10px;
+  position: relative;
+  color: #fff;
+}
+.user-bar .details::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 20px;
+  background-color: #fff;
+  position: absolute;
+  right: 0;
+  top: 8px;
+  transform: skew(-8deg);
+}
+.user-bar .portrait-style {
+  width: 32px;
+  height: 32px;
+  margin: 2px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.user-bar .details span {
+  padding-right: 10px;
 }
 .right-contanier {
   height: 100vh;
   /* background: url("../../images/bg.jpg") 0 0 no-repeat; */
   background-size: cover;
 }
-.right-contanier .right-view{
+.right-contanier .right-view {
   padding: 20px;
 }
 </style>

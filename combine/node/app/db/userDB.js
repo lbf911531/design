@@ -6,7 +6,7 @@ let pool = require('./pool');
 let login = (params,handle) => {
 	pool.getConnection((err,conn) => {
 		if(!err) {
-			let sql = 'select * from user_table where user=? and password=?';
+			let sql = 'select id,name,gender,permission,user,phone from user_table where user=? and password=?';
 			conn.query(sql,[params.user,params.password],function(err,results) {
 				handle(err,results);
 			});
@@ -18,21 +18,31 @@ let findAllUser = (handle)=>{
 	// 查找所有的user数据
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'select * from user_table';
+			let sql = 'select id,name,gender,permission,user,phone from user_table';
 			conn.query(sql,[],function(err,results){
-				if(!err){
-					console.log(results);
-					handle(err,results);
-				}
+				handle(err,results);
 			});
 			conn.release();
 		}	
 	})
 };
+
+const batchAssignPermission = (params,handle) => {
+	pool.getConnection((err, conn) => {
+		if(!err) {
+			const sql = "update user_table set permission = ? where id in (?)";
+			conn.query(sql,[params.permission.params.ids],(error, results) => {
+				handle(error, results);
+			});
+			conn.release();
+		}
+	})
+} 
+
 let findUserById = (id,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'select * from tbl where id=?';
+			let sql = 'select * from user_table where id=?';
 			// sql注入
 			conn.query(sql,[id],function(err,results){
 				if(!err){
@@ -47,13 +57,10 @@ let findUserById = (id,handle)=>{
 let deleteUserById = (id,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'delete from tbl where id=?';
+			let sql = 'delete from user_table where id=?';
 			// sql注入
 			conn.query(sql,[id],function(err,results){
-				// if(!err){
-					// console.log(result);
 					handle(err,results);
-				// }
 			});
 			conn.release();
 		}
@@ -62,13 +69,10 @@ let deleteUserById = (id,handle)=>{
 let saveUser = (obj,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'Insert into tbl(name,age) value(?,?,?)';
+			let sql = 'Insert into user_table(name,age) value(?,?,?)';
 			// sql注入
 			conn.query(sql,[obj.name,obj.age],function(err,results){
-				// if(!err){
-					// console.log(result);
-					handle(err,results);
-				// }
+				handle(err,results);
 			});
 			conn.release();
 		}
@@ -77,13 +81,10 @@ let saveUser = (obj,handle)=>{
 let updateUserById = (obj,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'update tbl set name=?,age=? where id=?';
+			let sql = 'update user_table set name=?,age=? where id=?';
 			// sql注入
 			conn.query(sql,[obj.name,obj.age,obj.id],function(err,results){
-				// if(!err){
-					// console.log(result);
-					handle(err,results);
-				// }
+				handle(err,results);
 			});
 			conn.release();
 		}
@@ -95,7 +96,8 @@ module.exports = {
 	findUserById,
 	deleteUserById,
 	saveUser,
-	updateUserById
+	updateUserById,
+	batchAssignPermission
 };
 
 

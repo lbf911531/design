@@ -40,12 +40,24 @@ userRouter.get("/getCaptcha", function(req, resp, next) {
    resp.end();
 });
 
-userRouter.get("/findAll", function(req, resp, next) {
+userRouter.get("/data/find/all", function(req, resp, next) {
   //db
-  userDB.findAllUser(function(results) {
-    resp.send(results);
-  });
+  userDB.findAllUser((err,result) => {
+    if(err) resp.send(err);
+    else resp.send(result);
+  })
 });
+
+userRouter.post("/data/batch/assign/permission", function(req, resp, next) {
+  const params = req.body;
+  userDB.batchAssignPermission(params,(err, result) => {
+    if(err) resp.send(err);
+    else resp.send(result);
+  })
+});
+
+
+
 userRouter.get("/findById", function(req, resp, next) {
   //获取参数
   let query = req.query;

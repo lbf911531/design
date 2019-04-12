@@ -6,6 +6,7 @@ import seniorStore from './seniorStore';
 import universityStore from './universityStore';
 import forumStore from './forumStore';
 import loginStore from './loginStore';
+import homeStore from './homeStore';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
    	   seniorStore,
    	   universityStore,
    	   forumStore,
-       loginStore
+       loginStore,
+       homeStore
    }
 })

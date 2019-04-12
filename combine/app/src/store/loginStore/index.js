@@ -39,6 +39,7 @@ export default {
        return new Promise((resolve,reject)=>{
         axios.post('/user/login',qs.stringify(obj))
           .then(({data})=>{
+            console.log(data);
             context.commit('SET_TOKEN',data.token);
             context.commit('GET_USER',data.user);
             context.commit('changeUserInfo',data.res[0] || {});

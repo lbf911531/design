@@ -17,7 +17,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
-body,ul,li,p,th,td{
+body,ul,li,p,th,td,h1,h2,h3,h4,h5,h6{
   margin: 0;
   padding: 0;
 }
