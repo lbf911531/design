@@ -89,7 +89,13 @@ export default {
           this.toLogin(params)
             .then(res => {
               this.isLoading = false;
-              if (res.flag === true) {
+              console.log(res);
+              if(res.status === 401.1) {
+                this.$message.error({
+                  title: '失败',
+                  message: res.data.message || '账号或密码错误'
+                })
+              } else if (res.flag === true) {
                 this.$router.push("/homepage");
               }
             })
@@ -97,7 +103,7 @@ export default {
               this.isLoading = false;
               this.$message.error({
                 title: "失败",
-                message: err+'或是账号或密码不正确'
+                message: err
               });
             });
         } else {
@@ -122,7 +128,7 @@ export default {
 <style scoped>
 .login {
   height: 100vh;
-  background: url("../../images/login-bg.jpg") 0 0 no-repeat;
+  background: url("/static/images/login-bg.jpg") 0 0 no-repeat;
   background-size: cover;
 }
 .login-container {
@@ -138,12 +144,12 @@ export default {
   right: 0;
 }
 div#midground {
-  background: url("../../images/midground.png");
+  background: url("/static/images/midground.png");
   z-index: 1;
   animation: wall 100s linear infinite;
 }
 div#foreground {
-  background: url("../../images/foreground.png");
+  background: url("/static/images/foreground.png");
   z-index: 2;
   animation: wall 153s linear infinite;
 }
@@ -161,7 +167,7 @@ div#foreground {
   height: 40vh;
   top: 20%;
   left: 10%;
-  background: url("../../images/login-logo.png") center no-repeat;
+  background: url("/static/images/login-logo.png") center no-repeat;
   background-size: 100% 100%;
   z-index: 5;
 }

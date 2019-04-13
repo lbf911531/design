@@ -13,7 +13,7 @@
   export default {
     data() {
       return {
-       
+
       }
     },
     methods: {
@@ -37,9 +37,9 @@
     content: "";
     display: block;
     clear: both;
-  } 
+  }
   .err-img{
-    background: url('../../images/404.jpg') 0 0 no-repeat;
+    background: url('/static/images/404.jpg') 0 0 no-repeat;
     background-size: cover;
     width: 560px;
     height: 540px;

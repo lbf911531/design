@@ -127,10 +127,10 @@ export default {
   data() {
     return {
       imgArr: [
-        { id: 0, idView: require("../../images/1.gif") },
-        { id: 1, idView: require("../../images/2.jpg") },
-        { id: 2, idView: require("../../images/3.jpg") },
-        { id: 3, idView: require("../../images/4.jpg") }
+        { id: 0, idView: "/static/images/1.gif" },
+        { id: 1, idView: "/static/images/2.jpg" },
+        { id: 2, idView: "/static/images/3.jpg" },
+        { id: 3, idView: "/static/images/4.jpg" }
       ],
       dialogTableVisible: false,
       search: "",

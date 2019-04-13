@@ -12,7 +12,7 @@ userRouter.post("/login", function(req, resp, next) {
       resp.send(err);
       //问题:如何抛出错误或者判断空结果下自定义错误抛给前端
     } else if (results.length < 1) {
-      resp.status(401).send({message: "用户名或密码错误" });
+      resp.status(401.1).send({message: "用户名或密码错误" });
     } else {
       resp.send({flag: true, res: results});
     }
@@ -56,27 +56,7 @@ userRouter.post("/data/batch/assign/permission", function(req, resp, next) {
   })
 });
 
-
-
-userRouter.get("/findById", function(req, resp, next) {
-  //获取参数
-  let query = req.query;
-  userDB.findUserById(query.id, function(results) {
-    resp.send(results);
-  });
-});
-userRouter.get("/deleteById", function(req, resp, next) {
-  //获取参数
-  let query = req.query;
-  userDB.deleteUserById(query.id, function(err, results) {
-    if (err) {
-      resp.send("出错了");
-    } else {
-      resp.send("删除成功");
-    }
-  });
-});
-userRouter.post("/save", function(req, resp, next) {
+userRouter.post("/register", function(req, resp, next) {
   //获取参数
   let query = req.body;
   userDB.saveUser(query, function(err, results) {
@@ -87,14 +67,14 @@ userRouter.post("/save", function(req, resp, next) {
     }
   });
 });
-userRouter.post("/update", function(req, resp, next) {
+userRouter.post("/password/find", function(req, resp, next) {
   //获取参数
-  let query = req.body;
-  userDB.updateUserById(query, function(err, results) {
+  const query = req.body;
+  userDB.updateUserPwdByUserId(query, function(err, results) {
     if (err) {
-      resp.send("出错了");
+      resp.send(err);
     } else {
-      resp.send("修改成功");
+      resp.status(200).send("修改成功");
     }
   });
 });

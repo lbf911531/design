@@ -2,8 +2,9 @@
 // 获取连接池对象，获取连接对象，执行sql语句
 // global.pool
 
-let pool = require('./pool');
-let login = (params,handle) => {
+const pool = require('./pool');
+
+const login = (params,handle) => {
 	pool.getConnection((err,conn) => {
 		if(!err) {
 			let sql = 'select id,name,gender,permission,user,phone from user_table where user=? and password=?';
@@ -14,7 +15,8 @@ let login = (params,handle) => {
 		}
 	})
 }
-let findAllUser = (handle)=>{
+
+const findAllUser = (handle)=>{
 	// 查找所有的user数据
 	pool.getConnection(function(err,conn){
 		if(!err){
@@ -27,6 +29,11 @@ let findAllUser = (handle)=>{
 	})
 };
 
+/**
+ * 分配管理员权限与取消权限
+ * @param {*} params 
+ * @param {*} handle 
+ */
 const batchAssignPermission = (params,handle) => {
 	pool.getConnection((err, conn) => {
 		if(!err) {
@@ -39,34 +46,12 @@ const batchAssignPermission = (params,handle) => {
 	})
 } 
 
-let findUserById = (id,handle)=>{
-	pool.getConnection(function(err,conn){
-		if(!err){
-			let sql = 'select * from user_table where id=?';
-			// sql注入
-			conn.query(sql,[id],function(err,results){
-				if(!err){
-					// console.log(result);
-					handle(results);
-				}
-			});
-			conn.release();
-		}
-	});
-};
-let deleteUserById = (id,handle)=>{
-	pool.getConnection(function(err,conn){
-		if(!err){
-			let sql = 'delete from user_table where id=?';
-			// sql注入
-			conn.query(sql,[id],function(err,results){
-					handle(err,results);
-			});
-			conn.release();
-		}
-	});
-};
-let saveUser = (obj,handle)=>{
+/**
+ * 注册
+ * @param {*} obj 
+ * @param {*} handle 
+ */
+const saveUser = (obj,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
 			let sql = 'Insert into user_table(name,age) value(?,?,?)';
@@ -78,12 +63,17 @@ let saveUser = (obj,handle)=>{
 		}
 	});
 };
-let updateUserById = (obj,handle)=>{
+
+/**
+ * 修改密码
+ * @param {*} obj 
+ * @param {*} handle 
+ */
+const updateUserPwdByUserId = (obj,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'update user_table set name=?,age=? where id=?';
-			// sql注入
-			conn.query(sql,[obj.name,obj.age,obj.id],function(err,results){
+			const sql = 'update user_table set password=? where user=?';
+			conn.query(sql,[obj.password,obj.user],function(err,results){
 				handle(err,results);
 			});
 			conn.release();
@@ -93,10 +83,8 @@ let updateUserById = (obj,handle)=>{
 module.exports = {
 	login,
 	findAllUser,
-	findUserById,
-	deleteUserById,
 	saveUser,
-	updateUserById,
+	updateUserPwdByUserId,
 	batchAssignPermission
 };
 

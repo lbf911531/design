@@ -14,7 +14,7 @@
               :collapse="isCollapse"
             >
               <div class="top-title">
-                <img src="../../images/logos.jpg" alt="图">
+                <img src="/static/images/logos.jpg" alt="图">
                 <span v-if="!isCollapse">ALUMNI</span>
               </div>
               <div class="top-logo">
@@ -52,7 +52,7 @@
                 <i class="iconfont icon-zhankai1 col-btn" @click="handleColleaspe"></i>
                 <div class="timer">{{curTime}}</div>
                 <div class="details">
-                  <img src="../../images/portrait-male.png" alt="头像" class="portrait-style">
+                  <img src="/static/images/portrait-male.png" alt="头像" class="portrait-style">
                   <span>{{this.userInfo && this.userInfo.name}}</span>
                 </div>
               </div>
@@ -125,7 +125,7 @@ div {
 }
 .home {
   height: 100vh;
-  background: url("../../images/main-bg.jpg") 0 0 no-repeat;
+  background: url("/static/images/main-bg.jpg") 0 0 no-repeat;
   background-size: cover;
 }
 .left-nav .top-logo {
@@ -149,7 +149,7 @@ div {
   background-color: rgb(0, 0, 0);
 }
 .top-logo-container {
-  background: url("../../images/home-title.jpg") center no-repeat;
+  background: url("/static/images/home-title.jpg") center no-repeat;
   background-size: cover;
   height: inherit;
   opacity: 0.6;
@@ -224,7 +224,6 @@ div {
 }
 .right-contanier {
   height: 100vh;
-  /* background: url("../../images/bg.jpg") 0 0 no-repeat; */
   background-size: cover;
 }
 .right-contanier .right-view {

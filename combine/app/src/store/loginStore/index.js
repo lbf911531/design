@@ -35,6 +35,9 @@ export default {
     }
   },
   actions: {
+    /**
+     * 登录
+     */
     toLogin(context,obj) {
        return new Promise((resolve,reject)=>{
         axios.post('/user/login',qs.stringify(obj))
@@ -47,6 +50,34 @@ export default {
           })
           .catch((err)=>{
              reject(err);
+          });
+      });
+    },
+    /**
+     * 找回密码
+     */
+    toFindPwdAndChange(context, obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/user/password/find',qs.stringify(obj))
+          .then(res=>{
+            resolve(res);
+          })
+          .catch((err)=>{
+            reject(err);
+          });
+      });
+    },
+    /**
+     * 注册
+     */
+    toRegister(context, obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/user/register',qs.stringify(obj))
+          .then(res=>{
+            resolve(res);
+          })
+          .catch((err)=>{
+            reject(err);
           });
       });
     }
