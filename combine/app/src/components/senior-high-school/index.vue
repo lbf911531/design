@@ -5,7 +5,11 @@
     <el-card>
       <el-tabs v-model="seniorActive" type="card" @tab-click="handleClick">
         <el-tab-pane label="同班同学" name="senior-over-info"></el-tab-pane>
-        <el-tab-pane label="同班好友" name="senior-friends-info"></el-tab-pane>
+        <el-tab-pane
+          label="同班好友"
+          name="senior-friends-info"
+          v-if="this.curUserInfo.permission === 'admin'"
+        ></el-tab-pane>
         <el-tab-pane label="同级朋友" name="senior-other-info"></el-tab-pane>
         <el-tab-pane label="与师为友" name="senior-teachers-info"></el-tab-pane>
       </el-tabs>
@@ -15,11 +19,15 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       seniorActive: "senior-over-info"
     };
+  },
+  computed: {
+    ...mapGetters(["curUserInfo"])
   },
   methods: {
     handleClick(tab, event) {

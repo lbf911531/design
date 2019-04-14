@@ -11,8 +11,14 @@
         round
         @click="handleBatchDel"
         :disabled="this.multipleSelection.length > 0 ? false : true"
+        v-if="this.curUserInfo.permission === 'admin'"
       >删 除</el-button>
-      <el-button type="primary" round @click="openDialogToAdd">新 增</el-button>
+      <el-button
+        type="primary"
+        round
+        @click="openDialogToAdd"
+        v-if="this.curUserInfo.permission === 'admin'"
+      >新 增</el-button>
     </div>
     <el-table
       :data="seniorTeachersValueList"
@@ -33,7 +39,7 @@
       <el-table-column prop="subject" label="教学学科" align="center">
         <template slot-scope="scope">{{formatSubject(scope.row.subject)}}</template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" v-if="this.curUserInfo.permission === 'admin'">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -172,7 +178,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["seniorTeachersList"]),
+    ...mapGetters(["seniorTeachersList", "curUserInfo"]),
     seniorTeachersValueList() {
       const that = this;
       return this.seniorTeachersList.filter(function(item) {

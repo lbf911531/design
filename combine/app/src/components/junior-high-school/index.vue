@@ -5,8 +5,16 @@
     <el-card>
       <el-tabs v-model="juniorActive" type="card" @tab-click="handleClick">
         <el-tab-pane label="集体信息" name="junior-over-info"></el-tab-pane>
-        <el-tab-pane label="好友信息" name="junior-friends-info"></el-tab-pane>
-        <el-tab-pane label="黑名单" name="junior-blacklist"></el-tab-pane>
+        <el-tab-pane
+          label="好友信息"
+          name="junior-friends-info"
+          v-if="this.curUserInfo.permission === 'admin'"
+        ></el-tab-pane>
+        <el-tab-pane
+          label="黑名单"
+          name="junior-blacklist"
+          v-if="this.curUserInfo.permission === 'admin'"
+        ></el-tab-pane>
       </el-tabs>
       <router-view></router-view>
     </el-card>
@@ -14,11 +22,15 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       juniorActive: "junior-over-info"
     };
+  },
+  computed: {
+    ...mapGetters(["curUserInfo"])
   },
   methods: {
     handleClick(tab, event) {

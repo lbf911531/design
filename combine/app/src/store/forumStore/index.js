@@ -3,34 +3,44 @@ import qs from 'qs';
 
 export default {
 	state: {
-    priamrys: []
+    msgList: [],
+    msgLimitList: [],
 	},
 	getters: {
-    priamrys: state => state.priamrys
+    msgList: state => state.msgList,
+    msgLimitList: state => state.msgLimitList
 	},
 	mutations: {
-    changePriamrys(state,data) {
- 	    state.priamrys = data;
+    changeForumMsgList(state,data) {
+ 	    state.msgList = data;
+    },
+    changeMsgLimitList(state,data) {
+      state.msgLimitList = data;
     }
 	},
 	actions: {
-    //获取小学列表信息
-    findAllPriamrys(context) {
+    //get
+    findAllForumMsg(context) {
    	  return new Promise((resolve,reject)=>{
-        axios.get('/primary/findAll')
-          .then(({data})=>{
-           	context.commit('changePriamrys',data);
-            resolve(data.data);
+        axios.get('/forum/message/find/all')
+          .then((res)=>{
+            if(res.status === 200) {
+              context.commit('changeForumMsgList',res.data);
+              resolve(res.data);
+            } else {
+              context.commit('changeForumMsgList',[]);
+              resolve([]);
+            }
           })
           .catch((err)=>{
-            reject(data.data);
+            reject(err);
           });
    	  });
     },
-    //add or edit
-    savePrimaryData(context,obj) {
+    //add
+    saveForumMsg(context,obj) {
       return new Promise((resolve,reject)=>{
-        axios.post('/primary/saveOrUpdate',qs.stringify(obj))
+        axios.post('/forum/message/save',qs.stringify(obj))
           .then(function(param){
             resolve(param);
           })
@@ -38,6 +48,36 @@ export default {
             reject(error);
           })
       });
+    },
+    //add like num
+    addForumMsgLikeNum(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/forum/message/like/num/add',qs.stringify(obj))
+          .then(function(param){
+            resolve(param);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
+    },
+    // find msg limit five
+    findMsgLimitFive(context) {
+      return new Promise((resolve,reject)=>{
+        axios.get('/forum/message/find/limit/five')
+          .then((res)=>{
+            if(res.status === 200) {
+              context.commit('changeMsgLimitList',res.data);
+              resolve(res.data);
+            } else {
+              context.commit('changeMsgLimitList',[]);
+              resolve([]);
+            }
+          })
+          .catch((err)=>{
+            reject(err);
+          });
+   	  });
     }
 	}
 }

@@ -9,7 +9,9 @@
           <div class="userInfo">
             <el-row>
               <el-col :span="8">用户名：</el-col>
-              <el-col :span="14">{{this.curUserInfo&& this.curUserInfo.name ? this.curUserInfo.name : '-'}}</el-col>
+              <el-col
+                :span="14"
+              >{{this.curUserInfo&& this.curUserInfo.name ? this.curUserInfo.name : '-'}}</el-col>
             </el-row>
             <el-row>
               <el-col :span="8">权限：</el-col>
@@ -28,7 +30,9 @@
             </el-row>
             <el-row>
               <el-col :span="8">联系电话：</el-col>
-              <el-col :span="14">{{this.curUserInfo&& this.curUserInfo.phone ? this.curUserInfo.phone : '-'}}</el-col>
+              <el-col
+                :span="14"
+              >{{this.curUserInfo&& this.curUserInfo.phone ? this.curUserInfo.phone : '-'}}</el-col>
             </el-row>
           </div>
         </el-card>
@@ -88,13 +92,30 @@
           </el-row>
           <div class="oper-box">
             <el-tooltip effect="dark" content="分配管理员权限" placement="top-start">
-              <el-button icon="el-icon-sort" circle type="info" @click="dialogTableVisible = true"></el-button>
+              <el-button
+                icon="el-icon-sort"
+                circle
+                type="info"
+                @click="dialogTableVisible = true"
+                v-if="this.curUserInfo.permission === 'admin'"
+              ></el-button>
             </el-tooltip>
           </div>
         </el-card>
       </el-col>
       <el-col :span="12" class="bottom-ele-box">
-        <el-card class="card-height card-height-226 diy-box" :body-style="{ padding: '5px' }">
+        <el-card class="card-height card-height-226 diy-box" :body-style="{ padding: '5px 20px',height: '240px',overflowY: 'scroll' }">
+          <div slot="header">
+            <span>最新五条留言</span>
+          </div>
+          <el-alert
+            v-for="item in msgLimitList"
+            :title="`${item.userName}留言于`"
+            class="margin-10"
+            type="success"
+            :key="item.id"
+            :description="item.msgDate"
+          ></el-alert>
         </el-card>
       </el-col>
     </el-row>
@@ -141,12 +162,13 @@ export default {
     Calendar
   },
   created() {
-    const id = window.sessionStorage.getItem('userId');
+    const id = window.sessionStorage.getItem("userId");
     this.findUserCollection();
     this.getCurUserById(id);
+    this.findMsgLimitFive();
   },
   computed: {
-    ...mapGetters(["curUserInfo", "userCollection"]),
+    ...mapGetters(["curUserInfo", "userCollection", "msgLimitList"]),
     adminLength() {
       const adminArr = [];
       if (this.userCollection) {
@@ -186,7 +208,12 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions(["getUserCollection", "batchAssignPer","getCurUserById"]),
+    ...mapActions([
+      "getUserCollection",
+      "batchAssignPer",
+      "getCurUserById",
+      "findMsgLimitFive"
+    ]),
     // 查询所有用户
     findUserCollection() {
       this.getUserCollection()
@@ -327,4 +354,8 @@ export default {
 .panel-tip {
   padding: 15px;
 }
+.margin-10 {
+  margin: 10px 0;
+}
 </style>
+

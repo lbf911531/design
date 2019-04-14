@@ -10,8 +10,14 @@
         plain
         @click="handleBatchDel"
         :disabled="this.multipleSelection.length > 0 ? false : true"
+        v-if="this.curUserInfo.permission === 'admin'"
       >删除</el-button>
-      <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+      <el-button
+        type="success"
+        plain
+        @click="openDialogToAdd"
+        v-if="this.curUserInfo.permission === 'admin'"
+      >新增</el-button>
     </div>
     <div>
       <el-pagination
@@ -47,7 +53,13 @@
           >{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '黑名单')}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" fixed="right" width="200px">
+      <el-table-column
+        label="操作"
+        align="center"
+        fixed="right"
+        width="200px"
+        v-if="this.curUserInfo.permission === 'admin'"
+      >
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button
@@ -136,7 +148,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["juniors","juniorOverList"]),
+    ...mapGetters(["juniors", "juniorOverList", "curUserInfo"]),
     juniorsList() {
       const that = this;
       return (

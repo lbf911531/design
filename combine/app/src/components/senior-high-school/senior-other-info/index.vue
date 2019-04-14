@@ -6,11 +6,17 @@
         <el-option label="男" value="男"></el-option>
         <el-option label="女" value="女"></el-option>
       </el-select>
-      <el-button type="primary" round @click="openDialogToAdd">新 增</el-button>
+      <el-button
+        type="primary"
+        round
+        @click="openDialogToAdd"
+        v-if="this.curUserInfo.permission === 'admin'"
+      >新 增</el-button>
       <el-button
         plain
         @click="handleBatchDel"
         :disabled="this.multipleSelection.length > 0 ? false : true"
+        v-if="this.curUserInfo.permission === 'admin'"
       >删除</el-button>
     </div>
     <el-table
@@ -34,7 +40,7 @@
           <el-tag type="warning" disable-transitions>{{'同级朋友'}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" v-if="this.curUserInfo.permission === 'admin'">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -144,7 +150,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["seniorOthersList"]),
+    ...mapGetters(["seniorOthersList", "curUserInfo"]),
     seniorSameLevelFriendList() {
       const that = this;
       return this.seniorOthersList.filter(function(item) {

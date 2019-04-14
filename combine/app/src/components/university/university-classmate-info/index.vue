@@ -10,8 +10,14 @@
         plain
         @click="handleBatchDel"
         :disabled="this.multipleSelection.length > 0 ? false : true"
+        v-if="this.curUserInfo.permission === 'admin'"
       >删除</el-button>
-      <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+      <el-button
+        type="success"
+        plain
+        @click="openDialogToAdd"
+        v-if="this.curUserInfo.permission === 'admin'"
+      >新增</el-button>
     </div>
     <el-table
       :data="unClassValueList"
@@ -28,7 +34,7 @@
       <el-table-column prop="phone" label="电话" align="center"></el-table-column>
       <el-table-column prop="contactWay" label="QQ号" align="center"></el-table-column>
       <el-table-column prop="birth" label="出生年月" align="center"></el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" v-if="this.curUserInfo.permission === 'admin'">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
             <el-button
@@ -125,7 +131,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["unClassList"]),
+    ...mapGetters(["unClassList", "curUserInfo"]),
     unClassValueList() {
       const that = this;
       return this.unClassList.filter(function(item) {

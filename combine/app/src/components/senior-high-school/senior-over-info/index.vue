@@ -6,11 +6,17 @@
         <el-option label="男" value="男"></el-option>
         <el-option label="女" value="女"></el-option>
       </el-select>
-      <el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+      <el-button
+        type="success"
+        plain
+        @click="openDialogToAdd"
+        v-if="this.curUserInfo.permission === 'admin'"
+      >新增</el-button>
       <el-button
         plain
         @click="handleBatchDel"
         :disabled="this.multipleSelection.length > 0 ? false : true"
+        v-if="this.curUserInfo.permission === 'admin'"
       >删除</el-button>
     </div>
     <el-table
@@ -37,7 +43,7 @@
           >{{scope.row.relationship === 'normal' ? '普通同学' : (scope.row.relationship === 'friend' ? '好友' : '同级同友')}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" v-if="this.curUserInfo.permission === 'admin'">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -142,7 +148,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["seniorsOverList"]),
+    ...mapGetters(["seniorsOverList", "curUserInfo"]),
 
     seniorList() {
       const that = this;

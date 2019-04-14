@@ -126,8 +126,12 @@ export default {
   crerated() {
     const id = window.sessionStorage.getItem('userId');
     if (id) {
-      console.log(id);
       this.getCurUserById(id);
+    } else {
+      this.$message({
+        type: 'info',
+        message: '获取数据失败'
+      })
     }
   },
   mounted() {

@@ -89,7 +89,7 @@ export default {
           this.toLogin(params)
             .then(res => {
               this.isLoading = false;
-              if(res.status === 401.1) {
+              if(res.status === 401) {
                 this.$message.error({
                   title: '失败',
                   message: res.data.message || '账号或密码错误'
@@ -102,7 +102,7 @@ export default {
               this.isLoading = false;
               this.$message.error({
                 title: "失败",
-                message: err
+                message: '登录失败,可能是账号或密码错误'
               });
             });
         } else {

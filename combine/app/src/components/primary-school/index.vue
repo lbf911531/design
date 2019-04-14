@@ -9,7 +9,7 @@
 				clearable
 				suffix-icon="el-icon-search"
 			></el-input>
-			<el-button type="success" plain @click="openDialogToAdd">新增</el-button>
+			<el-button type="success" plain @click="openDialogToAdd" v-if="this.curUserInfo.permission === 'admin'">新增</el-button>
 		</div>
 		<el-table :data="priamryList" stripe style="width: 100%" max-height="320">
 	    <el-table-column prop="name" label="姓名" align="center">
@@ -30,7 +30,7 @@
         	</el-tag>
 	    	</template>
 	    </el-table-column>
-			<el-table-column label="操作" align="center">
+			<el-table-column label="操作" align="center" v-if="this.curUserInfo.permission === 'admin'">
 	      <template slot-scope="scope">
 	        <el-button
 	        	size="mini"
@@ -116,7 +116,7 @@ export default {
 		}
 	},
 	computed: {
-    ...mapGetters(['primarys']),
+    ...mapGetters(['primarys','curUserInfo']),
    	priamryList() {
  	    const that = this;
 			return this.primarys &&
@@ -135,7 +135,7 @@ export default {
           title: '获取数据失败',
           message: err
         })
-      })
+      });
 	},
 	methods: {
 		...mapActions(['findAllPriamryData','savePrimaryData','updatePrimaryData']),
