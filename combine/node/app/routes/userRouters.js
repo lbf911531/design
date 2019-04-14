@@ -3,6 +3,7 @@
 const express = require("express");
 const userDB = require("../db/userDB");
 const svgCaptcha = require("svg-captcha");
+const jwt = require("jsonwebtoken");
 const userRouter = express.Router();
 // 登录
 userRouter.post("/login", function(req, resp, next) {
@@ -14,7 +15,13 @@ userRouter.post("/login", function(req, resp, next) {
     } else if (results.length < 1) {
       resp.status(401.1).send({message: "用户名或密码错误" });
     } else {
-      resp.send({flag: true, res: results});
+      const content ={name:req.body.user}; // 要生成token的主题信息
+      const secretOrPrivateKey="12345" // 这是加密的key（密钥） 
+      const token = jwt.sign(content, secretOrPrivateKey, {
+        expiresIn: 60*60*1  // 1小时过期
+      });
+      results[0].token = token;
+      resp.status(200).send(results);
     }
   });
 });
@@ -61,9 +68,9 @@ userRouter.post("/register", function(req, resp, next) {
   let query = req.body;
   userDB.saveUser(query, function(err, results) {
     if (err) {
-      resp.send("出错了");
+      resp.send(err);
     } else {
-      resp.send("添加成功");
+      resp.status(200).send("添加成功");
     }
   });
 });
@@ -75,6 +82,28 @@ userRouter.post("/password/find", function(req, resp, next) {
       resp.send(err);
     } else {
       resp.status(200).send("修改成功");
+    }
+  });
+});
+userRouter.post("/data/portrait/change", function(req, resp, next) {
+  //获取参数
+  const query = req.body;
+  userDB.changePortraitById(query, function(err, results) {
+    if (err) {
+      resp.send(err);
+    } else {
+      resp.status(200).send(results);
+    }
+  });
+});
+
+userRouter.get("/data/find/by/id", (req,resp,next) => {
+  const params = req.query;
+  userDB.findCurUsrInfoById(params.id,(err, results) => {
+    if (err) {
+      resp.send(err);
+    } else {
+      resp.status(200).send(results[0]);
     }
   });
 });

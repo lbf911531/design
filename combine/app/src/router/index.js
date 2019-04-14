@@ -28,6 +28,7 @@ import store from '@/store/index'
 Vue.use(Router)
 
 const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -38,9 +39,9 @@ const router = new Router({
             path: '/homepage',
             name: 'HomePage',
             component: HomePage,
-            // meta: {
-            //   requireAuth: true
-            // }
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/primary-school',
             name: 'Primary',
@@ -67,9 +68,9 @@ const router = new Router({
                 component: JuniorBlacklist
               }
             ],
-            // meta: {
-            //   requireAuth: true
-            // }
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/senior-high-school',
             name: 'Senior',
@@ -93,9 +94,9 @@ const router = new Router({
                 component: SeniorTeachers
               }
             ],
-            // meta: {
-            //   requireAuth: true
-            // }
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/university',
             name: 'University',
@@ -115,9 +116,9 @@ const router = new Router({
                 component: UniversitySchool
               }
             ],
-            // meta: {
-            //   requireAuth: true
-            // }
+            meta: {
+              requireAuth: true
+            }
           },{
             path: '/forum',
             name: 'Forum',
@@ -151,7 +152,8 @@ const router = new Router({
 });
 // 注册全局钩子用来拦截导航
 router.beforeEach((to, from, next) => {
-  const token = store.state.token
+  // const token = store.state.token;
+  const token = window.sessionStorage.getItem('token');
   if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
     if (token) { // 通过vuex state获取当前的token是否存在
       next()

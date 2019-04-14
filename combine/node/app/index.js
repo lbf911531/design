@@ -18,11 +18,11 @@ app.use(cookieParser());
 // 处理跨域
 app.all('*',function(req,resp,next){
 	resp.set({
-		"Access-Control-Allow-Origin":"*",
+		"Access-Control-Allow-Origin": "*",
 		"Access-Control-Allow-Headers":"X-Requested-With,Content-Type,Access-Token",
-		"Access-Control-Allow-Methods":"POST,GET,OPTIONS"
-    // "Access-Control-Expose-Headers": "*",
-    // "Access-Control-Allow-Credentials": "true"
+		"Access-Control-Allow-Methods":"POST,GET,OPTIONS",
+    "Access-Control-Expose-Headers": "*",
+    "Access-Control-Allow-Credentials": "true"
 	});
 	//继续往下执行
 	next();

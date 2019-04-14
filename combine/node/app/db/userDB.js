@@ -7,7 +7,7 @@ const pool = require('./pool');
 const login = (params,handle) => {
 	pool.getConnection((err,conn) => {
 		if(!err) {
-			let sql = 'select id,name,gender,permission,user,phone from user_table where user=? and password=?';
+			let sql = 'select id,name,gender,permission,user,phone,portraitUrl from user_table where user=? and password=?';
 			conn.query(sql,[params.user,params.password],function(err,results) {
 				handle(err,results);
 			});
@@ -20,7 +20,7 @@ const findAllUser = (handle)=>{
 	// 查找所有的user数据
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'select id,name,gender,permission,user,phone from user_table';
+			let sql = 'select id,name,gender,permission,user,phone,portraitUrl from user_table';
 			conn.query(sql,[],function(err,results){
 				handle(err,results);
 			});
@@ -54,9 +54,9 @@ const batchAssignPermission = (params,handle) => {
 const saveUser = (obj,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			let sql = 'Insert into user_table(name,age) value(?,?,?)';
+			let sql = 'Insert into user_table(name,user,gender,phone,password,permission,portraitUrl) value(?,?,?,?,?,?,?)';
 			// sql注入
-			conn.query(sql,[obj.name,obj.age],function(err,results){
+			conn.query(sql,[obj.name,obj.user,obj.gender,obj.phone,obj.password,obj.permission,obj.portraitUrl],function(err,results){
 				handle(err,results);
 			});
 			conn.release();
@@ -80,12 +80,38 @@ const updateUserPwdByUserId = (obj,handle)=>{
 		}
 	});
 };
+
+const changePortraitById = (params,handle) => {
+	pool.getConnection(function(err,conn){
+		if(!err){
+			const sql = 'update user_table set portraitUrl=? where id=?';
+			conn.query(sql,[params.portraitUrl,params.id],function(err,results){
+				handle(err,results);
+			});
+			conn.release();
+		}
+	});
+}
+
+const findCurUsrInfoById = (id, handle) => {
+	pool.getConnection(function(err,conn){
+		if(!err){
+			let sql = 'select id,name,gender,permission,user,phone,portraitUrl from user_table where id=?';
+			conn.query(sql,[id],function(err,results){
+				handle(err,results);
+			});
+			conn.release();
+		}	
+	})
+}
 module.exports = {
 	login,
 	findAllUser,
 	saveUser,
 	updateUserPwdByUserId,
-	batchAssignPermission
+	batchAssignPermission,
+	changePortraitById,
+	findCurUsrInfoById
 };
 
 

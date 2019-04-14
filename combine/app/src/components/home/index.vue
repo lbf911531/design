@@ -52,8 +52,21 @@
                 <i class="iconfont icon-zhankai1 col-btn" @click="handleColleaspe"></i>
                 <div class="timer">{{curTime}}</div>
                 <div class="details">
-                  <img src="/static/images/portrait-male.png" alt="头像" class="portrait-style">
-                  <span>{{this.userInfo && this.userInfo.name}}</span>
+                  <el-popover placement="bottom" width="80" trigger="hover">
+                    <ul>
+                      <li>
+                        <span>{{this.curUserInfo && this.curUserInfo.name}}</span>
+                      </li>
+                      <li>
+                        <a @click="imgBoxVisible=true">换头像</a>
+                      </li>
+                      <li>
+                        <a @click="handleLoginOut">登出</a>
+                      </li>
+                    </ul>
+                    <!-- <img src="/static/images/portrait-male.png" alt="头像" class="portrait-style"> -->
+                    <img :src="imgUrl" alt="头像" class="portrait-style" slot="reference">
+                  </el-popover>
                 </div>
               </div>
               <div class="right-view">
@@ -65,6 +78,15 @@
       </div>
     </div>
     <div class="foot-copy">曾记同窗日月酣，未忘分道梦魂憨。</div>
+    <el-dialog class="portrait-card-box" width="30%" title="头像" :visible.sync="imgBoxVisible">
+      <img
+        :src="item"
+        v-for="(item,index) in portraitArr"
+        alt="头像"
+        :key="item"
+        @click="handleSelectImg(index)"
+      >
+    </el-dialog>
   </div>
 </template>
 
@@ -81,10 +103,32 @@ export default {
       rightSpan: 20,
       timer: null,
       curTime: "",
+      imgBoxVisible: false,
+      portraitArr: [
+        "/static/images/portrait-male.png",
+        "/static/images/portrait-female.png",
+        "/static/images/portrait1.jpg",
+        "/static/images/portrait2.jpg",
+        "/static/images/portrait3.jpeg",
+        "/static/images/portrait4.jpeg",
+        "/static/images/portrait5.jpeg",
+        "/static/images/portrait6.png",
+        "/static/images/home-title.jpg"
+      ]
     };
   },
   computed: {
-    ...mapGetters(["userInfo"]),
+    ...mapGetters(["userInfo","curUserInfo"]),
+    imgUrl() {
+      return this.curUserInfo.portraitUrl || "/static/images/portrait-male.png";
+    }
+  },
+  crerated() {
+    const id = window.sessionStorage.getItem('userId');
+    if (id) {
+      console.log(id);
+      this.getCurUserById(id);
+    }
   },
   mounted() {
     // 可以修改路由
@@ -104,6 +148,7 @@ export default {
     this.timer = null;
   },
   methods: {
+    ...mapActions(["changePortraitUrl", "getCurUserById","toLoginOut"]),
     handleColleaspe() {
       this.isCollapse = !this.isCollapse;
       this.leftSpan = this.isCollapse === true ? 1 : 4;
@@ -113,6 +158,34 @@ export default {
       let timer = setInterval(() => {
         this.curTime = moment(Date.now()).format("YYYY-MM-DD dddd HH:mm:ss");
       }, 1000);
+    },
+    handleSelectImg(index) {
+      const userId = window.sessionStorage.getItem('userId');
+      const params = {
+        portraitUrl: this.portraitArr[index],
+        id: userId
+      };
+      this.changePortraitUrl(params)
+        .then(res => {
+          if (res.status === 200) {
+            this.$message({
+              type: "success",
+              message: "更换头像成功"
+            });
+            this.getCurUserById(userId);
+            this.imgBoxVisible = false;
+          }
+        })
+        .catch(err => {
+          this.$message({
+            type: "error",
+            message: err
+          });
+        });
+    },
+    handleLoginOut() {
+      this.toLoginOut();
+      this.$router.replace('/login');
     }
   }
 };
@@ -127,6 +200,7 @@ div {
   height: 100vh;
   background: url("/static/images/main-bg.jpg") 0 0 no-repeat;
   background-size: cover;
+  position: relative;
 }
 .left-nav .top-logo {
   background-color: rgba(43, 47, 50, 0.8);
@@ -199,7 +273,17 @@ div {
   float: right;
   margin-right: 10px;
   position: relative;
-  color: #fff;
+}
+.el-popover ul {
+  list-style: none;
+}
+.el-popover ul li {
+  padding: 5px 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.el-popover ul li:hover {
+  background-color: rgba(0, 0, 0, 0.45);
 }
 .user-bar .details::after {
   content: "";
@@ -215,12 +299,30 @@ div {
 .user-bar .portrait-style {
   width: 32px;
   height: 32px;
+  border-radius: 50%;
   margin: 2px;
   vertical-align: middle;
   cursor: pointer;
 }
 .user-bar .details span {
   padding-right: 10px;
+}
+/* .portrait-card-box {
+  background-color: rgba(0, 0, 0, 0.05);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: auto;
+  transform: translate(-50%,-50%);
+  z-index: 101;
+} */
+.portrait-card-box img {
+  margin: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 .right-contanier {
   height: 100vh;
@@ -230,3 +332,12 @@ div {
   padding: 20px;
 }
 </style>
+<style lang="less">
+.portrait-card-box {
+  .el-dialog__header,
+  .el-dialog__body {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+</style>
+

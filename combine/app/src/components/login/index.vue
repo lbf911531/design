@@ -89,13 +89,12 @@ export default {
           this.toLogin(params)
             .then(res => {
               this.isLoading = false;
-              console.log(res);
               if(res.status === 401.1) {
                 this.$message.error({
                   title: '失败',
                   message: res.data.message || '账号或密码错误'
                 })
-              } else if (res.flag === true) {
+              } else if (res.status === 200) {
                 this.$router.push("/homepage");
               }
             })

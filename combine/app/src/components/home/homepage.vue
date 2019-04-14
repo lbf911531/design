@@ -9,7 +9,7 @@
           <div class="userInfo">
             <el-row>
               <el-col :span="8">用户名：</el-col>
-              <el-col :span="14">{{this.userInfo&& this.userInfo.name ? this.userInfo.name : '-'}}</el-col>
+              <el-col :span="14">{{this.curUserInfo&& this.curUserInfo.name ? this.curUserInfo.name : '-'}}</el-col>
             </el-row>
             <el-row>
               <el-col :span="8">权限：</el-col>
@@ -17,18 +17,18 @@
                 <el-tag
                   type="danger"
                   size="mini"
-                >{{this.userInfo&& this.userInfo.permission ? (this.userInfo.permission === 'admin' ? '管理员' : '普通用户') : '-'}}</el-tag>
+                >{{this.curUserInfo&& this.curUserInfo.permission ? (this.curUserInfo.permission === 'admin' ? '管理员' : '普通用户') : '-'}}</el-tag>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="8">性别：</el-col>
               <el-col
                 :span="14"
-              >{{this.userInfo&& this.userInfo.gender ? this.userInfo.gender : '-'}}</el-col>
+              >{{this.curUserInfo&& this.curUserInfo.gender ? this.curUserInfo.gender : '-'}}</el-col>
             </el-row>
             <el-row>
               <el-col :span="8">联系电话：</el-col>
-              <el-col :span="14">{{this.userInfo&& this.userInfo.phone ? this.userInfo.phone : '-'}}</el-col>
+              <el-col :span="14">{{this.curUserInfo&& this.curUserInfo.phone ? this.curUserInfo.phone : '-'}}</el-col>
             </el-row>
           </div>
         </el-card>
@@ -141,10 +141,12 @@ export default {
     Calendar
   },
   created() {
+    const id = window.sessionStorage.getItem('userId');
     this.findUserCollection();
+    this.getCurUserById(id);
   },
   computed: {
-    ...mapGetters(["userInfo", "userCollection"]),
+    ...mapGetters(["curUserInfo", "userCollection"]),
     adminLength() {
       const adminArr = [];
       if (this.userCollection) {
@@ -184,7 +186,7 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions(["getUserCollection", "batchAssignPer"]),
+    ...mapActions(["getUserCollection", "batchAssignPer","getCurUserById"]),
     // 查询所有用户
     findUserCollection() {
       this.getUserCollection()
