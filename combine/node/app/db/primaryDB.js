@@ -1,15 +1,24 @@
 
 let pool = require('./pool');
 // console.log('pool-course--');
-let findAllPrimaryList = (handle) => {
+let findAllPrimaryList = (params,handle) => {
   pool.getConnection((err,conn) => {
     if(err) {
       handle(err);
       return
     }
-    let sql = 'select * from primary_table';
-    conn.query(sql, [], function(err,results) {
-      handle(err,results);
+    const startSize = parseInt(params.pageSize) * (parseInt(params.curPage) - 1);
+    const endSize = startSize + parseInt(params.pageSize); 
+    const sqlTotal = 'SELECT * FROM primary_table';
+    const sqlLimit = 'SELECT * FROM primary_table limit ?,?';
+    conn.query(sqlTotal, [], (totalErr, totalResults) => {
+      if(totalErr) {
+        handle(totalErr); 
+        return;
+      }
+      conn.query(sqlLimit, [startSize, endSize], (limitErr, limitResults) => {
+        handle(limitErr, {totalLength: totalResults.length,limitRes:limitResults});
+      });
     });
     conn.release();
   });

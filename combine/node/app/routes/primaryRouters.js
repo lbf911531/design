@@ -4,7 +4,8 @@ const primaryDB = require('../db/primaryDB');
 let primaryRouter = express.Router();
 
 primaryRouter.get('/findAllPrimaryList',function(req,resp){
-	primaryDB.findAllPrimaryList(function(err,results){
+  const params = req.query;
+	primaryDB.findAllPrimaryList(params,function(err,results){
    if(err) {
       resp.send(err);
    } else resp.send(results);
