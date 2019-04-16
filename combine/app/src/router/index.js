@@ -17,6 +17,7 @@ import UniversityClass from '@/components/university/university-classmate-info'
 import UniversityDep from '@/components/university/university-department-info'
 import UniversitySchool from '@/components/university/university-school-info'
 import Forum from '@/components/forum'
+import Comments from '@/components/forum/comments'
 import Login from '@/components/login'
 import FindPwd from '@/components/login/findMyPwd'
 import Register from '@/components/login/register'
@@ -123,6 +124,13 @@ const router = new Router({
             path: '/forum',
             name: 'Forum',
             component: Forum,
+            meta: {
+              requireAuth: true
+            }
+          },{
+            path: '/forum/comments/:id',
+            name: 'Comments',
+            component: Comments,
             meta: {
               requireAuth: true
             }

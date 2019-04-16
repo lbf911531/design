@@ -42,7 +42,7 @@
               </el-menu-item>
               <el-menu-item index="/forum">
                 <i class="el-icon-service"></i>
-                <span slot="title">论坛</span>
+                <span slot="title">留言区</span>
               </el-menu-item>
             </el-menu>
           </el-col>
@@ -201,10 +201,14 @@ div {
   color: #333;
 }
 .home {
+  min-width: 1000px;
   height: 100vh;
   background: url("/static/images/main-bg.jpg") 0 0 no-repeat;
   background-size: cover;
   position: relative;
+}
+.left-nav {
+  overflow: hidden;
 }
 .left-nav .top-logo {
   background-color: rgba(43, 47, 50, 0.8);
@@ -212,12 +216,14 @@ div {
   text-align: center;
   color: #fff;
   margin-bottom: 14px;
+  overflow: hidden;
 }
 .top-title {
   padding-left: 10px;
   padding-top: 10px;
   height: 50px;
   color: #fff;
+  overflow: hidden;
 }
 .top-title span {
   font-size: 24px;
@@ -311,16 +317,6 @@ div {
 .user-bar .details span {
   padding-right: 10px;
 }
-/* .portrait-card-box {
-  background-color: rgba(0, 0, 0, 0.05);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 400px;
-  height: auto;
-  transform: translate(-50%,-50%);
-  z-index: 101;
-} */
 .portrait-card-box img {
   margin: 10px;
   width: 40px;
@@ -334,6 +330,7 @@ div {
 }
 .right-contanier .right-view {
   padding: 20px;
+  position: relative;
 }
 </style>
 <style lang="less">

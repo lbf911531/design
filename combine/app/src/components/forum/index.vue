@@ -21,6 +21,10 @@
               <span style="float: right; padding: 0px 10px">{{msgItem.msgDate}}</span>
               <div class="oper-box">
                 <el-button
+                  type="text"
+                  @click="handleJumpToComments(msgItem.id)"
+                >详情</el-button>
+                <el-button
                   class="ico ico-alidianzan"
                   type="text"
                   @click="handleGiveLike(msgItem.id)"
@@ -157,6 +161,9 @@ export default {
       str = str.replace(/&lt;/g, "<");
       str = str.replace(/&gt;/g, ">");
       return str;
+    },
+    handleJumpToComments(id) {
+      this.$router.push(`/forum/comments/${id}`)
     }
   }
 };

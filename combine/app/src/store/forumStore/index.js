@@ -5,10 +5,14 @@ export default {
 	state: {
     msgList: [],
     msgLimitList: [],
+    addMsgList: [], // 追加评论
+    curMsgObj: {}
 	},
 	getters: {
     msgList: state => state.msgList,
-    msgLimitList: state => state.msgLimitList
+    msgLimitList: state => state.msgLimitList,
+    addMsgList: state => state.addMsgList,
+    curMsgObj: state => state.curMsgObj
 	},
 	mutations: {
     changeForumMsgList(state,data) {
@@ -16,6 +20,12 @@ export default {
     },
     changeMsgLimitList(state,data) {
       state.msgLimitList = data;
+    },
+    changeForumAddMsgList(state,data) {
+      state.addMsgList = data;
+    },
+    changeCurMsgObj(state,data) {
+      state.curMsgObj = data;
     }
 	},
 	actions: {
@@ -78,6 +88,35 @@ export default {
             reject(err);
           });
    	  });
-    }
+    },
+    findAdditionMsg(context,id) {
+      return new Promise((resolve,reject)=>{
+        axios.get(`/forum/message/comments/find/by/msgId?msgId=${id}`)
+          .then((res)=>{
+            if(res.status === 200 && !res.data.errno) {
+              context.commit('changeForumAddMsgList',res.data.addMsg);
+              context.commit('changeCurMsgObj',res.data.curMsg)
+              resolve(res.data);
+            } else {
+              context.commit('changeForumAddMsgList',[]);
+              resolve([]);
+            }
+          })
+          .catch((err)=>{
+            reject(err);
+          });
+   	  });
+    },
+    saveForumAddMsg(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/forum/message/comments/save',qs.stringify(obj))
+          .then(function(param){
+            resolve(param);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
+    },
 	}
 }

@@ -50,5 +50,27 @@ forumRouter.get("/message/find/limit/five",(req, resp) => {
   });
 });
 
+forumRouter.get("/message/comments/find/by/msgId", (req, resp) => {
+  const params = req.query;
+  forumDB.findAdditionMsg(params,(err, results) => {
+    if (err) {
+      resp.send(err);
+    } else {
+      resp.status(200).send(results);
+    };
+  });
+});
+
+forumRouter.post("/message/comments/save", (req, resp) => {
+  const params = req.body;
+  forumDB.addAdditionMsg(params, (err, results) => {
+    if (err) {
+      resp.send(err);
+    } else {
+      resp.status(200).send(results);
+    };
+  });
+});
+
 module.exports = forumRouter;
  

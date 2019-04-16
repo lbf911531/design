@@ -122,9 +122,58 @@ const findLimitLenMsg = handle => {
   });
 }
 
+// 根据forum_table id 查询对应addition_table 数据
+const findAdditionMsg = (params,handle) => {
+  pool.getConnection((err,conn) => {
+    if(err) {
+      handle(err);
+      return
+    }
+    const curMsgSql = 'select * from forum_table where id = ?';
+    const sql = 'select * from addition_table where msgId = ? order by add_msgDate DESC,add_id DESC';
+    conn.query(curMsgSql,[params.msgId],(error,res) => {
+      if(error) {
+        handle(error);
+        return;
+      }
+      conn.query(sql,[params.msgId],(err,results) => {
+        const curMsg = res.length > 0 ? res[0] : {};
+        handle(err,{curMsg,addMsg:results});
+      });
+    })
+    conn.release();
+  })
+}
+
+const addAdditionMsg = (params,handle) => {
+  pool.getConnection((err, conn) => {
+    if(err) {
+      handle(err);
+      return;
+    }
+    const sql = "insert into addition_table (add_userName,add_userId,add_userImg,add_msg,add_msgDate,msgId) value(?,?,?,?,?,?)"
+    conn.query(
+      sql, 
+      [
+        params.userName,
+        parseInt(params.userId),
+        params.userImg,
+        params.msg,
+        params.msgDate,
+        params.msgId
+      ], 
+      (error, results) => {
+      handle(error,results);
+    });
+    conn.release();
+  })
+}
+
 module.exports = {
   findAllMsg,
   saveMsg,
   addLikeNum,
-  findLimitLenMsg
+  findLimitLenMsg,
+  findAdditionMsg,
+  addAdditionMsg
 };

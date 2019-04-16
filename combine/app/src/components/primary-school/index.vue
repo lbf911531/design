@@ -117,13 +117,17 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["primarys", "curUserInfo","primaryOverLength"]),
+    ...mapGetters(["primarys", "curUserInfo", "primaryOverLength"]),
     priamryList() {
       const that = this;
+      console.log(this.curUserInfo);
       return (
         this.primarys &&
         this.primarys.filter(function(item) {
           if (item.name) {
+            if(that.curUserInfo.permission !== 'admin') {
+              item.relationship = 'normal';
+            }
             return item.name.indexOf(that.search) !== -1;
           } else return false;
         })

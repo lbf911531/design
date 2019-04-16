@@ -157,6 +157,9 @@ export default {
         this.seniorsOverList instanceof Array &&
         this.seniorsOverList.filter(function(item) {
           if (item.name) {
+            if (that.curUserInfo.permission !== "admin") {
+              item.relationship = "normal";
+            }
             return (
               item.name.indexOf(that.searchName) !== -1 &&
               item.gender.indexOf(that.searchSex) !== -1
