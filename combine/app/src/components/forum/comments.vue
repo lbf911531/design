@@ -26,7 +26,9 @@
             </p>
           </el-col>
           <el-col :span="4">
-            <el-button @click="show = true" size="small" type="danger"><a href="#common" class="commo-btn">评 论</a></el-button>
+            <el-button @click="show = true" size="small" type="danger">
+              <a href="#common" class="commo-btn">评 论</a>
+            </el-button>
           </el-col>
         </el-row>
       </div>
@@ -69,7 +71,7 @@
         <quill-editor :options="editorOption" v-model="content" @change="onEditorChange($event)"></quill-editor>
         <div class="comment-add-footer">
           <el-button type="primary" @click="handleAddMsg" size="small">发 布</el-button>
-          <el-button @click="show = false" size="small">取 消</el-button>
+          <el-button @click="handleCancelShow" size="small">取 消</el-button>
         </div>
       </div>
     </div>
@@ -141,6 +143,7 @@ export default {
             this.content = "";
             this.show = false;
           } else {
+            this.content = "";
             this.$message({
               type: "error",
               message: res.code + res.sqlMessage
@@ -148,6 +151,7 @@ export default {
           }
         })
         .catch(err => {
+          this.content = "";
           this.$message({
             type: "error",
             message: err
@@ -156,6 +160,10 @@ export default {
     },
     handleReturn() {
       this.$router.replace("/forum");
+    },
+    handleCancelShow() {
+      this.content = "";
+      this.show = false;
     }
   }
 };

@@ -333,6 +333,7 @@ export default {
             });
         })
         .catch(() => {
+          this.multipleSelection = [];
           this.$message({
             type: "info",
             message: "已取消删除"

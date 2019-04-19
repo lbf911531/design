@@ -20,15 +20,14 @@
             <el-col :span="16">
               <span style="float: right; padding: 0px 10px">{{msgItem.msgDate}}</span>
               <div class="oper-box">
-                <el-button
-                  type="text"
-                  @click="handleJumpToComments(msgItem.id)"
-                >详情</el-button>
-                <el-button
-                  class="ico ico-alidianzan"
-                  type="text"
-                  @click="handleGiveLike(msgItem.id)"
-                ></el-button>
+                <el-button type="text" @click="handleJumpToComments(msgItem.id)">详情</el-button>
+                <el-tooltip content="点赞" effect="dark" placement="right-start">
+                  <el-button
+                    class="ico ico-alidianzan"
+                    type="text"
+                    @click="handleGiveLike(msgItem.id)"
+                  ></el-button>
+                </el-tooltip>
                 <span>
                   点赞数:
                   <span class="like-num">{{msgItem.likeNum}}</span>
@@ -45,7 +44,7 @@
     <el-dialog :visible.sync="dialogVisible" title="请留言">
       <quill-editor :options="editorOption" v-model="content" @change="onEditorChange($event)"></quill-editor>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="handleCancelDialog">取 消</el-button>
         <el-button type="primary" @click="handleAddMsg">确 定</el-button>
       </span>
     </el-dialog>
@@ -54,13 +53,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import moment from 'moment';
+import moment from "moment";
 
 export default {
   data() {
     return {
       dialogVisible: false,
-      content: '',
+      content: "",
       editorOption: {},
       dataList: [],
       msgContent: ""
@@ -70,16 +69,14 @@ export default {
     this.getAllForumMsg();
   },
   computed: {
-    ...mapGetters(["msgList"]),
+    ...mapGetters(["msgList"])
   },
   methods: {
     ...mapActions(["findAllForumMsg", "saveForumMsg", "addForumMsgLikeNum"]),
     // 查询
     getAllForumMsg() {
       this.findAllForumMsg()
-        .then(data => {
-
-        })
+        .then(data => {})
         .catch(err => {
           this.$message({
             type: "error",
@@ -104,9 +101,9 @@ export default {
             this.getAllForumMsg();
           } else {
             this.$message({
-              type: 'error',
+              type: "error",
               message: res.code
-            })
+            });
           }
         })
         .catch(err => {
@@ -128,7 +125,7 @@ export default {
         userName: userInfo.name,
         userImg: userInfo.portraitUrl,
         msg: this.msgContent,
-        msgDate: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+        msgDate: moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
       };
 
       this.saveForumMsg(params)
@@ -140,15 +137,17 @@ export default {
             });
             this.getAllForumMsg();
             this.dialogVisible = false;
-            this.content = '';
+            this.content = "";
           } else {
+            this.content = "";
             this.$message({
-              type: 'error',
+              type: "error",
               message: res.code + res.sqlMessage
-            })
+            });
           }
         })
         .catch(err => {
+          this.content = "";
           this.$message({
             type: "error",
             message: err
@@ -163,7 +162,11 @@ export default {
       return str;
     },
     handleJumpToComments(id) {
-      this.$router.push(`/forum/comments/${id}`)
+      this.$router.push(`/forum/comments/${id}`);
+    },
+    handleCancelDialog() {
+      this.dialogVisible = false;
+      this.content = "";
     }
   }
 };

@@ -2,8 +2,14 @@
   <div class="primary-school">
     <div class="quote">当筵意气凌九霄，星离雨散不终朝。</div>
     <div class="divide-line"></div>
+    <div class="alert-info">
+      <el-alert title="本模块暂不提供批量删除功能，请珍惜小学同学信息。一旦删除，不易找回" type="info" show-icon></el-alert>
+    </div>
     <div class="option-div">
       <el-input v-model="search" placeholder="请输入姓名" clearable suffix-icon="el-icon-search"></el-input>
+      <el-tooltip class="item" effect="dark" content="重置关系筛选条件" placement="right-start">
+        <el-button type="success" plain @click="clearFilter" style="float: none">重置</el-button>
+      </el-tooltip>
       <el-button
         type="success"
         plain
@@ -11,7 +17,7 @@
         v-if="this.curUserInfo.permission === 'admin'"
       >新增</el-button>
     </div>
-    <div>
+    <div class="pagination-box">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -23,12 +29,27 @@
         style="float: right"
       ></el-pagination>
     </div>
-    <el-table :data="priamryList" stripe style="width: 100%" max-height="340" v-loading="loading">
+    <el-table
+      :data="priamryList"
+      ref="table"
+      stripe
+      style="width: 100%"
+      max-height="340"
+      v-loading="loading"
+    >
       <el-table-column prop="name" label="姓名" align="center"></el-table-column>
       <el-table-column prop="age" label="年龄" align="center"></el-table-column>
       <el-table-column prop="gender" label="性别" align="center"></el-table-column>
       <el-table-column prop="birth" label="出生年月" align="center"></el-table-column>
-      <el-table-column prop="relationship" label="关系" align="center">
+      <el-table-column
+        prop="relationship"
+        label="关系"
+        align="center"
+        :filters="[{ text: '普通同学', value: 'normal' }, { text: '好友', value: 'friend' }]"
+        :filter-method="filterTag"
+        filter-placement="bottom-end"
+      >
+        >
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.relationship !== 'normal' ? 'warning' : 'success'"
@@ -120,13 +141,12 @@ export default {
     ...mapGetters(["primarys", "curUserInfo", "primaryOverLength"]),
     priamryList() {
       const that = this;
-      console.log(this.curUserInfo);
       return (
         this.primarys &&
         this.primarys.filter(function(item) {
           if (item.name) {
-            if(that.curUserInfo.permission !== 'admin') {
-              item.relationship = 'normal';
+            if (that.curUserInfo.permission !== "admin") {
+              item.relationship = "normal";
             }
             return item.name.indexOf(that.search) !== -1;
           } else return false;
@@ -245,6 +265,12 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val || 1;
       this.getAllPrimaryData();
+    },
+    filterTag(value, row) {
+      return row.relationship === value;
+    },
+    clearFilter() {
+      this.$refs.table.clearFilter();
     }
   }
 };
@@ -267,6 +293,18 @@ export default {
   box-sizing: border-box;
   border-bottom: 1px solid #fafafa;
   margin-bottom: 10px;
+}
+.pagination-box::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.el-table {
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.alert-info {
+  margin: 10px 0;
 }
 </style>
 

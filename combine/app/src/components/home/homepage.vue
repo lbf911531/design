@@ -104,7 +104,10 @@
         </el-card>
       </el-col>
       <el-col :span="12" class="bottom-ele-box">
-        <el-card class="card-height card-height-226 diy-box" :body-style="{ padding: '5px 20px',height: '240px',overflowY: 'scroll' }">
+        <el-card
+          class="card-height card-height-226 diy-box"
+          :body-style="{ padding: '5px 20px',height: '240px',overflowY: 'scroll' }"
+        >
           <div slot="header">
             <span>最新五条留言</span>
           </div>
@@ -134,7 +137,7 @@
         <el-table-column property="gender" label="性别" align="center"></el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogTableVisible = false">取 消</el-button>
+        <el-button @click="handleCancelAssign">取 消</el-button>
         <el-button type="primary" @click="assignPermissions">确 定</el-button>
       </div>
     </el-dialog>
@@ -256,6 +259,7 @@ export default {
               }
             })
             .catch(err => {
+              that.multipleSelection = [];
               that.$message({
                 type: "error",
                 message: err
@@ -263,11 +267,16 @@ export default {
             });
         })
         .catch(() => {
+          that.multipleSelection = [];
           this.$message({
             type: "info",
             message: "已取消分配"
           });
         });
+    },
+    handleCancelAssign() {
+      this.multipleSelection = [];
+      this.dialogTableVisible = false;
     }
   }
 };
