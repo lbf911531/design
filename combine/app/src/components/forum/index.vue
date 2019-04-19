@@ -12,7 +12,7 @@
         <div slot="header" class="box-header">
           <el-row>
             <el-col :span="2">
-              <img :src="msgItem.userImg" alt="头像" class="portrait-img-style">
+              <img :src="msgItem.portraitUrl" alt="头像" class="portrait-img-style">
             </el-col>
             <el-col :span="6">
               <span>{{msgItem.userName+'留言：'}}</span>
@@ -157,6 +157,7 @@ export default {
     // 存储及将数据库中的数据反显为HTML字符串
     // 后台接收的数据如下："&lt;h1&gt;title&lt;
     escapeStringHTML(str) {
+      if(!str) return;
       str = str.replace(/&lt;/g, "<");
       str = str.replace(/&gt;/g, ">");
       return str;

@@ -24,7 +24,8 @@ const findAllMsg = handle => {
       handle(err);
       return
     }
-    let sql = 'select * from forum_table order by msgDate DESC,id DESC';
+    // let sql = 'select * from forum_table order by msgDate DESC,id DESC';
+    const sql = 'SELECT a.id,a.userName,a.msg,a.likeNum,a.msgDate,b.portraitUrl FROM forum_table AS a LEFT JOIN user_table AS b ON a.userId=b.id order by a.msgDate DESC, a.id DESC';
     conn.query(sql, [], function(err,results) {
       handle(err,results);
     });
@@ -130,7 +131,8 @@ const findAdditionMsg = (params,handle) => {
       return
     }
     const curMsgSql = 'select * from forum_table where id = ?';
-    const sql = 'select * from addition_table where msgId = ? order by add_msgDate DESC,add_id DESC';
+    // const sql = 'select * from addition_table where msgId = ? order by add_msgDate DESC,add_id DESC';
+    const sql = 'SELECT a.add_id,a.add_userName,a.add_msg,a.add_msgDate,b.portraitUrl FROM addition_table AS a LEFT JOIN user_table AS b ON a.add_userId=b.id WHERE a.msgId = ? order by a.add_msgDate DESC, a.add_id DESC';
     conn.query(curMsgSql,[params.msgId],(error,res) => {
       if(error) {
         handle(error);

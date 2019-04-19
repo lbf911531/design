@@ -254,6 +254,7 @@ export default {
                   type: "success",
                   message: "分配成功"
                 });
+                that.dialogTableVisible = false;
                 that.findUserCollection();
                 that.multipleSelection = [];
               }
@@ -268,6 +269,7 @@ export default {
         })
         .catch(() => {
           that.multipleSelection = [];
+          that.dialogTableVisible = false;
           this.$message({
             type: "info",
             message: "已取消分配"

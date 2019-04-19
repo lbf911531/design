@@ -38,7 +38,7 @@ const batchAssignPermission = (params,handle) => {
 	pool.getConnection((err, conn) => {
 		if(!err) {
 			const sql = "update user_table set permission = ? where id in (?)";
-			conn.query(sql,[params.permission.params.ids],(error, results) => {
+			conn.query(sql,[params.permission,params.ids],(error, results) => {
 				handle(error, results);
 			});
 			conn.release();

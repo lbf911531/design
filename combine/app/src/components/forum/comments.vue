@@ -52,7 +52,7 @@
           <div slot="header" class="box-header">
             <el-row>
               <el-col :span="2">
-                <img :src="msgItem.add_userImg" alt="头像" class="portrait-img-style">
+                <img :src="msgItem.portraitUrl" alt="头像" class="portrait-img-style">
               </el-col>
               <el-col :span="6">
                 <span>{{msgItem.add_userName+'留言：'}}</span>

@@ -6,6 +6,7 @@ const seniorRouter = require('./routes/seniorRouters');
 const juniorRouter = require('./routes/juniorRouters');
 const universityRouter = require('./routes/universityRouters');
 const forumRouter = require('./routes/forumRouters');
+const imgRouter = require('./routes/imgRouters');
 const cookieParser = require('cookie-parser');
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/senior',seniorRouter);
 app.use('/junior',juniorRouter);
 app.use('/university',universityRouter);
 app.use('/forum',forumRouter);
+app.use('/img',imgRouter);
 app.listen(3000,function(){
 	console.log('3000服务器已启动');
 });

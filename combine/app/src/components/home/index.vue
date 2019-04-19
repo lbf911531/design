@@ -86,6 +86,15 @@
         :key="item"
         @click="handleSelectImg(index)"
       >
+      <!-- <el-upload
+        class="avatar-uploader"
+        action="http://127.0.0.1:3000/img/uploading"
+        :show-file-list="true"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload">
+        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload> -->
     </el-dialog>
   </div>
 </template>
@@ -114,7 +123,8 @@ export default {
         "/static/images/portrait5.jpeg",
         "/static/images/portrait6.png",
         "/static/images/home-title.jpg"
-      ]
+      ],
+      imageUrl: '',
     };
   },
   computed: {
@@ -190,6 +200,22 @@ export default {
     handleLoginOut() {
       this.toLoginOut();
       this.$router.replace('/login');
+    },
+    // ----
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
     }
   }
 };
