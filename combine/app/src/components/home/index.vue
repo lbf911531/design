@@ -55,16 +55,20 @@
                   <el-popover placement="bottom" width="80" trigger="hover">
                     <ul>
                       <li>
-                        <span>{{this.curUserInfo && this.curUserInfo.name}}</span>
+                        <span>
+                          <i class="iconfont icon-xiaoren"></i>
+                          {{this.curUserInfo && this.curUserInfo.name}}
+                        </span>
                       </li>
-                      <li>
-                        <a @click="imgBoxVisible=true">换头像</a>
+                      <li @click="imgBoxVisible=true">
+                        <i class="el-icon-setting"></i>
+                        <a>换头像</a>
                       </li>
-                      <li>
-                        <a @click="handleLoginOut">登出</a>
+                      <li @click="handleLoginOut">
+                        <i class="el-icon-back"></i>
+                        <a>登出</a>
                       </li>
                     </ul>
-                    <!-- <img src="/static/images/portrait-male.png" alt="头像" class="portrait-style"> -->
                     <img :src="imgUrl" alt="头像" class="portrait-style" slot="reference">
                   </el-popover>
                 </div>
@@ -86,15 +90,6 @@
         :key="item"
         @click="handleSelectImg(index)"
       >
-      <!-- <el-upload
-        class="avatar-uploader"
-        action="http://127.0.0.1:3000/img/uploading"
-        :show-file-list="true"
-        :on-success="handleAvatarSuccess"
-        :before-upload="beforeAvatarUpload">
-        <img v-if="imageUrl" :src="imageUrl" class="avatar">
-        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-      </el-upload> -->
     </el-dialog>
   </div>
 </template>
@@ -124,24 +119,24 @@ export default {
         "/static/images/portrait6.png",
         "/static/images/home-title.jpg"
       ],
-      imageUrl: '',
+      imageUrl: ""
     };
   },
   computed: {
-    ...mapGetters(["userInfo","curUserInfo"]),
+    ...mapGetters(["userInfo", "curUserInfo"]),
     imgUrl() {
       return this.curUserInfo.portraitUrl || "/static/images/portrait-male.png";
     }
   },
   crerated() {
-    const id = window.sessionStorage.getItem('userId');
+    const id = window.sessionStorage.getItem("userId");
     if (id) {
       this.getCurUserById(id);
     } else {
       this.$message({
-        type: 'info',
-        message: '获取数据失败'
-      })
+        type: "info",
+        message: "获取数据失败"
+      });
     }
   },
   mounted() {
@@ -162,7 +157,7 @@ export default {
     this.timer = null;
   },
   methods: {
-    ...mapActions(["changePortraitUrl", "getCurUserById","toLoginOut"]),
+    ...mapActions(["changePortraitUrl", "getCurUserById", "toLoginOut"]),
     handleColleaspe() {
       this.isCollapse = !this.isCollapse;
       this.leftSpan = this.isCollapse === true ? 1 : 4;
@@ -174,7 +169,7 @@ export default {
       }, 1000);
     },
     handleSelectImg(index) {
-      const userId = window.sessionStorage.getItem('userId');
+      const userId = window.sessionStorage.getItem("userId");
       const params = {
         portraitUrl: this.portraitArr[index],
         id: userId
@@ -199,21 +194,21 @@ export default {
     },
     handleLoginOut() {
       this.toLoginOut();
-      this.$router.replace('/login');
+      this.$router.replace("/login");
     },
     // ----
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
+      const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+        this.$message.error("上传头像图片只能是 JPG 格式!");
       }
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+        this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
     }
@@ -232,10 +227,9 @@ div {
   background: url("/static/images/main-bg.jpg") 0 0 no-repeat;
   background-size: cover;
   position: relative;
-}
-.left-nav {
   overflow: hidden;
 }
+
 .left-nav .top-logo {
   background-color: rgba(43, 47, 50, 0.8);
   height: 126px;
@@ -309,17 +303,21 @@ div {
   float: right;
   margin-right: 10px;
   position: relative;
+  text-align: left;
 }
 .el-popover ul {
   list-style: none;
 }
 .el-popover ul li {
-  padding: 5px 10px;
-  text-align: center;
+  padding: 5px 20px;
+  text-align: left;
   cursor: pointer;
 }
+.el-popover ul li i {
+  margin-right: 10px;
+}
 .el-popover ul li:hover {
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(255, 255, 0, 0.45);
 }
 .user-bar .details::after {
   content: "";

@@ -55,6 +55,17 @@ export default {
             reject(error);
           })
       });
+    },
+    batchSaveValue(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.post('/primary/data/save/batch',qs.stringify(obj))
+          .then(function(params){
+            resolve(params);
+          })
+          .catch(function(error){
+            reject(error);
+          })
+      });
     }
 	}
 }

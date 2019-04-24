@@ -28,14 +28,25 @@
                 type="password"
                 v-model="formData.checkPassword"
                 autocomplete="off"
-                @keyup.enter.native="submitForm('formData')"
               ></el-input>
             </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitForm('formData')">提交</el-button>
-              <el-button @click="resetForm('formData')">重置</el-button>
+            <el-form-item label="验证码" prop="checkCode">
+                <el-input
+                  placeholder="请输入验证码"
+                  v-model="formData.checkCode"
+                  prefix-icon="el-icon-picture"
+                  @keyup.enter.native="submitForm('formData')"
+                >
+                  <a @click="changeCaptcha" slot="append">
+                    <img :src="srcUrl" alt="captcha" ref="imgYzm">
+                  </a>
+                </el-input>
             </el-form-item>
           </el-form>
+          <div class="dialog-footer" style="textAlign:center">
+            <el-button type="primary" @click="submitForm('formData')">提交</el-button>
+            <el-button @click="resetForm('formData')">重置</el-button>
+          </div>
         </div>
       </el-card>
     </div>
@@ -64,18 +75,34 @@ export default {
         callback();
       }
     };
+    const validataCode = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入验证码"));
+      } else {
+        const code = document.cookie.split("=")[1];
+        if (code !== value) callback(new Error("验证码不正确"));
+        else callback();
+      }
+    };
     return {
       formData: {
         user: "",
         password: "",
-        checkPassword: ""
+        checkPassword: "",
+        checkCode: ""
       },
       rules: {
-        user: [{ required: true, trigger: "blur" }],
+        user: [{ required: true, trigger: "blur", message: "请输入" }],
         password: [{ validator: validatePass, trigger: "blur" }],
-        checkPassword: [{ validator: validatePass2, trigger: "blur" }]
-      }
+        checkPassword: [{ validator: validatePass2, trigger: "blur" }],
+        checkCode: [{ validator: validataCode, trigger: "blur" }]
+      },
+      baseUrl: "http://127.0.0.1:3000",
+      srcUrl: "http://127.0.0.1:3000/user/getCaptcha"
     };
+  },
+  created() {
+    this.changeCaptcha();
   },
   mounted() {
     // min and max radius, radius threshold and percentage of filled circles
@@ -366,8 +393,11 @@ export default {
           params.checkPassword = encrypwd;
           this.toFindPwdAndChange(params)
             .then(res => {
-              if (res.stauts !== 200) {
-                this.$message({ type: "error", message: "修改失败,可能不存在此用户" });
+              if (res.status !== 200) {
+                this.$message({
+                  type: "error",
+                  message: "修改失败,可能不存在此用户"
+                });
                 return;
               }
               setTimeout(() => {
@@ -403,6 +433,10 @@ export default {
     },
     handleReturn() {
       this.$router.replace("/login");
+    },
+    // 刷新验证码
+    changeCaptcha() {
+      this.srcUrl = this.baseUrl + "/user/getCaptcha?d=" + Math.random();
     }
   }
 };

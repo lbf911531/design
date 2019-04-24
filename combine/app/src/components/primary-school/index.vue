@@ -7,12 +7,20 @@
     </div>
     <div class="option-div">
       <el-input v-model="search" placeholder="请输入姓名" clearable suffix-icon="el-icon-search"></el-input>
-      <el-tooltip class="item" effect="dark" content="重置关系筛选条件" placement="right-start">
-        <el-button type="success" plain @click="clearFilter" style="float: none">重置</el-button>
+      <el-tooltip class="item" effect="dark" content="重置关系筛选条件" placement="top-start">
+        <el-button type="primary" @click="clearFilter" style="float: none">重置</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="导出列表数据" placement="top-start">
+        <el-button type="primary" :loading="exporting" @click="exportData" style="float: none">导出数据</el-button>
       </el-tooltip>
       <el-button
-        type="success"
-        plain
+        @click="uploadView = true"
+        type="primary"
+        v-if="this.curUserInfo.permission === 'admin'"
+        style="float: none"
+      >批量导入</el-button>
+      <el-button
+        type="primary"
         @click="openDialogToAdd"
         v-if="this.curUserInfo.permission === 'admin'"
       >新增</el-button>
@@ -109,12 +117,19 @@
         <el-button type="success" @click="verifySaveData('primaryForm')">保 存</el-button>
       </div>
     </el-dialog>
+    <UploadExcel
+      :view="uploadView"
+      :on-cancel="cancelUpload"
+      :on-save="saveUploadMsgList"
+      ref="upload"
+    ></UploadExcel>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
+import UploadExcel from "@/components/common/uploadExcel.vue";
 
 export default {
   data() {
@@ -134,8 +149,20 @@ export default {
       loading: false,
       pageSize: 5,
       total: 0,
-      currentPage: 1
+      currentPage: 1,
+      exporting: false,
+      uploadView: false,
+      exchange: {
+        关系: "relationship",
+        性别: "gender",
+        出生年月: "birth",
+        姓名: "name",
+        年龄: "age"
+      }
     };
+  },
+  components: {
+    UploadExcel
   },
   computed: {
     ...mapGetters(["primarys", "curUserInfo", "primaryOverLength"]),
@@ -161,7 +188,8 @@ export default {
     ...mapActions([
       "findAllPriamryData",
       "savePrimaryData",
-      "updatePrimaryData"
+      "updatePrimaryData",
+      "batchSaveValue"
     ]),
     getAllPrimaryData() {
       this.loading = true;
@@ -271,6 +299,79 @@ export default {
     },
     clearFilter() {
       this.$refs.table.clearFilter();
+    },
+    // export
+    exportData() {
+      this.exporting = true;
+      this.$confirm("是否将本页数据以excel形式表格导出?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          require.ensure([], () => {
+            const { export_json_to_excel } = require("vendor/Export2Excel");
+            const tHeader = ["姓名", "年龄", "性别", "出生年月"];
+            const filterVal = [
+              "name",
+              "age",
+              "gender",
+              "birth",
+              "relationship"
+            ];
+            const list = this.primarys || [];
+            const data = this.formatJson(filterVal, list);
+            export_json_to_excel(tHeader, data, "小学列表数据");
+            this.exporting = false;
+            this.$notify({
+              type: "success",
+              message: "导出成功，请去本地查看"
+            });
+          });
+        })
+        .catch(() => {
+          this.exporting = false;
+        });
+    },
+    //将数组处理成索引数组
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
+    },
+    cancelUpload() {
+      this.uploadView = false;
+      this.$refs.upload.clearTable();
+    },
+    saveUploadMsgList() {
+      if (this.$refs.upload.tableData) {
+        if (this.$refs.upload.tableData.length < 1) return;
+        const paramsList = this.$refs.upload.tableData.map(data => {
+          //  将data对象中的中文属性转为英文，并返回
+          const temp = {};
+          for (let key in data) {
+            temp[this.exchange[key]] = data[key];
+          }
+          temp.relationship = "normal";
+          return temp;
+        });
+        this.batchSaveValue({ list: JSON.stringify(paramsList) })
+          .then(res => {
+            if (res.status === 200) {
+              this.$message({
+                type: "success",
+                message: "导入成功"
+              });
+              this.getAllPrimaryData();
+              this.cancelUpload();
+            }
+          })
+          .catch(err => {
+            this.$message({
+              type: "error",
+              message: err
+            });
+            this.cancelUpload();
+          });
+      }
     }
   }
 };
@@ -307,4 +408,13 @@ export default {
   margin: 10px 0;
 }
 </style>
+<style lang="less">
+.el-pagination {
+  .el-pagination__total,
+  .el-pagination__jump {
+    color: #fff;
+  }
+}
+</style>
+>
 

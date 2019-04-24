@@ -60,8 +60,32 @@ let updatePrimaryValue = (params,handle) => {
   });
 }
 
+const batchSaveValue = (params,handle) => {
+  pool.getConnection((err,conn) => {
+    if(err) {
+      handle(err);
+      return;
+    }
+    const list = JSON.parse(params.list);
+    if(list.length <= 0) return;
+    const values = list.map(item => {
+      return (temp = [item.name,item.age,item.gender,item.birth,item.relationship]);
+    });
+    let sql = 'Insert into primary_table(name,age,gender,birth,relationship) value ?';
+    conn.query(
+      sql,
+      [values],
+      (err,results) => {
+        handle(err,results);
+      }
+    );
+    conn.release();
+  })
+}
+
 module.exports = {
   findAllPrimaryList,
   savePrimaryValue,
-  updatePrimaryValue
+  updatePrimaryValue,
+  batchSaveValue
 };

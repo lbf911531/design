@@ -129,6 +129,7 @@ export default {
       } else {
         const code = document.cookie.split('=')[1];
         if(code !== value) callback(new Error("验证码不正确"));
+        else callback();
       }
     };
     return {

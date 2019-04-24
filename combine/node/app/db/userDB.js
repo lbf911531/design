@@ -72,10 +72,22 @@ const saveUser = (obj,handle)=>{
 const updateUserPwdByUserId = (obj,handle)=>{
 	pool.getConnection(function(err,conn){
 		if(!err){
-			const sql = 'update user_table set password=? where user=?';
-			conn.query(sql,[obj.password,obj.user],function(err,results){
-				handle(err,results);
-			});
+			const selectSql = 'select id from user_table where user=?';
+			conn.query(selectSql,[obj.user],(error,result) => {
+				if(error) {
+					handle(error);
+					return;
+				} else {
+					if(result.length > 0) {
+						const sql = 'update user_table set password=? where user=?';
+						conn.query(sql,[obj.password,obj.user],function(err,results){
+							handle(err,results);
+						});
+					} else {
+							handle(err,'none');
+					}
+				}
+			})
 			conn.release();
 		}
 	});

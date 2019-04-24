@@ -18,6 +18,9 @@
         @click="openDialogToAdd"
         v-if="this.curUserInfo.permission === 'admin'"
       >新增</el-button>
+      <el-tooltip class="item" effect="dark" content="导出列表数据" placement="top-start">
+        <el-button type="primary" :loading="exporting" @click="exportData" style="float: none">导出数据</el-button>
+      </el-tooltip>
     </div>
     <el-table
       :data="unClassValueList"
@@ -127,7 +130,8 @@ export default {
           }
         ]
       },
-      multipleSelection: [] // 多选
+      multipleSelection: [], // 多选
+      exporting: false
     };
   },
   computed: {
@@ -282,6 +286,51 @@ export default {
           });
           this.multipleSelection = [];
         });
+    },
+    // export
+    exportData() {
+      this.exporting = true;
+      this.$confirm("是否将本页数据以excel形式表格导出?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          require.ensure([], () => {
+            const { export_json_to_excel } = require("vendor/Export2Excel");
+            const tHeader = [
+              "姓名",
+              "年龄",
+              "性别",
+              "电话",
+              "QQ号",
+              "出生年月"
+            ];
+            const filterVal = [
+              "name",
+              "age",
+              "gender",
+              "phone",
+              "contactWay",
+              "birth"
+            ];
+            const list = this.unClassList || [];
+            const data = this.formatJson(filterVal, list);
+            export_json_to_excel(tHeader, data, "大学同学列表数据");
+            this.exporting = false;
+            this.$notify({
+              type: "success",
+              message: "导出成功，请去本地查看"
+            });
+          });
+        })
+        .catch(() => {
+          this.exporting = false;
+        });
+    },
+    //将数组处理成索引数组
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

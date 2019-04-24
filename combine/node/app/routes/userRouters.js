@@ -81,7 +81,9 @@ userRouter.post("/password/find", function(req, resp, next) {
     if (err) {
       resp.send(err);
     } else {
-      resp.status(200).send("修改成功");
+      if(results !== 'none') {
+        resp.status(200).send("修改成功");
+      } else resp.status(500).send('修改失败，请检测账号是否正确');
     }
   });
 });

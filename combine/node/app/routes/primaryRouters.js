@@ -27,6 +27,14 @@ primaryRouter.post('/updatePrimaryList',function(req,resp){
     } else resp.send(results);
   });
 });
+primaryRouter.post('/data/save/batch',(req, resp) => {
+  const params = req.body;
+  primaryDB.batchSaveValue(params, (err, results) => {
+    if(err) {
+      resp.send(err)
+    } else resp.status(200).send(results);
+  })
+})
 module.exports = primaryRouter;
 
 

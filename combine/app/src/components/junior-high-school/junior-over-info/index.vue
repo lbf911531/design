@@ -18,6 +18,9 @@
         @click="openDialogToAdd"
         v-if="this.curUserInfo.permission === 'admin'"
       >新增</el-button>
+      <el-tooltip class="item" effect="dark" content="导出列表数据" placement="top-start">
+        <el-button type="primary" :loading="exporting" @click="exportData" style="float: none">导出数据</el-button>
+      </el-tooltip>
     </div>
     <div>
       <el-pagination
@@ -144,7 +147,8 @@ export default {
       multipleSelection: [], // 多选
       pageSize: 5,
       total: 0,
-      currentPage: 1
+      currentPage: 1,
+      exporting: false
     };
   },
   computed: {
@@ -347,6 +351,43 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val || 1;
       this.getJuniorValueList();
+    },
+    // export
+    exportData() {
+      this.exporting = true;
+      this.$confirm("是否将本页数据以excel形式表格导出?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          require.ensure([], () => {
+            const { export_json_to_excel } = require("vendor/Export2Excel");
+            const tHeader = ["姓名", "年龄", "性别", "出生年月", "QQ号"];
+            const filterVal = [
+              "name",
+              "age",
+              "gender",
+              "birth",
+              "contactWay"
+            ];
+            const list = this.juniors || [];
+            const data = this.formatJson(filterVal, list);
+            export_json_to_excel(tHeader, data, "初中同学列表数据");
+            this.exporting = false;
+            this.$notify({
+              type: "success",
+              message: "导出成功，请去本地查看"
+            });
+          });
+        })
+        .catch(() => {
+          this.exporting = false;
+        });
+    },
+    //将数组处理成索引数组
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

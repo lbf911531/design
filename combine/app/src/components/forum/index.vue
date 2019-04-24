@@ -5,10 +5,13 @@
     </div>
     <div class="divide-line"></div>
     <div class="publish-msg">
+      <el-input placeholder="请输入留言人姓名" v-model="searchName" class="search-input" size="small">
+        <el-button slot="append" icon="el-icon-search"></el-button>
+      </el-input>
       <el-button type="primary" icon="el-icon-message" size="small" @click="dialogVisible=true">留言</el-button>
     </div>
     <div class="forum-content">
-      <el-card class="box-card" shadow="hover" v-for="msgItem in msgList" :key="msgItem.id">
+      <el-card class="box-card" shadow="hover" v-for="msgItem in filterMsgList" :key="msgItem.id">
         <div slot="header" class="box-header">
           <el-row>
             <el-col :span="2">
@@ -41,6 +44,18 @@
         </div>
       </el-card>
     </div>
+    <div>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[5,10,20,30]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        style="float: right;margin-top: 10px"
+      ></el-pagination>
+    </div>
     <el-dialog :visible.sync="dialogVisible" title="请留言">
       <quill-editor :options="editorOption" v-model="content" @change="onEditorChange($event)"></quill-editor>
       <span slot="footer" class="dialog-footer">
@@ -62,14 +77,32 @@ export default {
       content: "",
       editorOption: {},
       dataList: [],
-      msgContent: ""
+      msgContent: "",
+      searchName: "",
+      pageSize: 5,
+      total: 0,
+      currentPage: 1,
     };
   },
   created() {
     this.getAllForumMsg();
   },
   computed: {
-    ...mapGetters(["msgList"])
+    ...mapGetters(["msgList"]),
+    filterMsgList() {
+      const that = this;
+      if (this.msgList) {
+        const temp = this.msgList.filter(item => {
+          if (item.userName) {
+            return item.userName.indexOf(that.searchName) !== -1;
+          }
+        });
+        this.total = temp.length;
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        const endIndex = (this.currentPage - 1) * this.pageSize + this.pageSize;
+        return temp.slice(startIndex,endIndex) || temp;
+      } else return false;
+    }
   },
   methods: {
     ...mapActions(["findAllForumMsg", "saveForumMsg", "addForumMsgLikeNum"]),
@@ -157,7 +190,7 @@ export default {
     // 存储及将数据库中的数据反显为HTML字符串
     // 后台接收的数据如下："&lt;h1&gt;title&lt;
     escapeStringHTML(str) {
-      if(!str) return;
+      if (!str) return;
       str = str.replace(/&lt;/g, "<");
       str = str.replace(/&gt;/g, ">");
       return str;
@@ -168,7 +201,13 @@ export default {
     handleCancelDialog() {
       this.dialogVisible = false;
       this.content = "";
-    }
+    },
+    handleSizeChange(val) {
+      this.pageSize = val || 5;
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val || 1;
+    },
   }
 };
 </script>
@@ -197,6 +236,9 @@ export default {
   }
   .publish-msg {
     padding: 5px 20px;
+    .search-input{
+      width: 300px;
+    }
     &:after {
       content: "";
       display: block;

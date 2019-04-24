@@ -8,13 +8,21 @@
           </div>
           <div class="userInfo">
             <el-row>
-              <el-col :span="8">用户名：</el-col>
+              <i class="ico-aliemotion ico ico-font"></i>
+              {{this.period}}
+            </el-row>
+            <el-row>
+              <el-col :span="8">
+                <i class="iconfont icon-xiaoren ico-font"></i>用户：
+              </el-col>
               <el-col
                 :span="14"
               >{{this.curUserInfo&& this.curUserInfo.name ? this.curUserInfo.name : '-'}}</el-col>
             </el-row>
             <el-row>
-              <el-col :span="8">权限：</el-col>
+              <el-col :span="8">
+                <i class="ico ico-aliquanxian ico-font"></i>权限：
+              </el-col>
               <el-col :span="14">
                 <el-tag
                   type="danger"
@@ -23,13 +31,17 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="8">性别：</el-col>
+              <el-col :span="8">
+                <i class="ico ico-alixingbie ico-font"></i>性别：
+              </el-col>
               <el-col
                 :span="14"
               >{{this.curUserInfo&& this.curUserInfo.gender ? this.curUserInfo.gender : '-'}}</el-col>
             </el-row>
             <el-row>
-              <el-col :span="8">联系电话：</el-col>
+              <el-col :span="8">
+                <i class="ico-font el-icon-mobile-phone"></i>电话：
+              </el-col>
               <el-col
                 :span="14"
               >{{this.curUserInfo&& this.curUserInfo.phone ? this.curUserInfo.phone : '-'}}</el-col>
@@ -106,19 +118,22 @@
       <el-col :span="12" class="bottom-ele-box">
         <el-card
           class="card-height card-height-226 diy-box"
-          :body-style="{ padding: '5px 20px',height: '240px',overflowY: 'scroll' }"
+          :body-style="{ padding: '0px 20px',overflowY: 'scroll', height: '240px'}"
         >
-          <div slot="header">
-            <span>最新五条留言</span>
+          <div slot="header" class="header-card">
+            <span>RECENT POSTINGS</span>
+            <el-tooltip effect="dark" content="更多请点击左侧留言区" placement="top">
+              <i class="el-icon-more"></i>
+            </el-tooltip>
           </div>
-          <el-alert
-            v-for="item in msgLimitList"
-            :title="`${item.userName}留言于`"
-            class="margin-10"
-            type="success"
-            :key="item.id"
-            :description="item.msgDate"
-          ></el-alert>
+          <div class="body-card">
+            <div class="body-card-content" v-for="item in msgLimitList" :key="item.id">
+              <p @click="handleJumpToComments(item.id)">{{item.userName}}留言/{{item.msgDate}}</p>
+              <p>
+                <span v-html="escapeStringHTML(item.msg)"></span>
+              </p>
+            </div>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -158,7 +173,8 @@ export default {
       ],
       dialogTableVisible: false,
       search: "",
-      multipleSelection: [] // 多选
+      multipleSelection: [], // 多选
+      period: ""
     };
   },
   components: {
@@ -169,6 +185,7 @@ export default {
     this.findUserCollection();
     this.getCurUserById(id);
     this.findMsgLimitFive();
+    this.renderTimePeriod();
   },
   computed: {
     ...mapGetters(["curUserInfo", "userCollection", "msgLimitList"]),
@@ -279,7 +296,38 @@ export default {
     handleCancelAssign() {
       this.multipleSelection = [];
       this.dialogTableVisible = false;
-    }
+    },
+    // 判断上午下午时间段
+    renderTimePeriod() {
+      const now = new Date();
+      const hour = now.getHours();
+      if (hour < 6) {
+        this.period = "凌晨好！";
+      } else if (hour < 9) {
+        this.period = "早上好！";
+      } else if (hour < 12) {
+        this.period = "上午好！";
+      } else if (hour < 14) {
+        this.period = "中午好！";
+      } else if (hour < 17) {
+        this.period = "下午好！";
+      } else if (hour < 19) {
+        this.period = "傍晚好！";
+      } else if (hour < 22) {
+        this.period = "晚上好！";
+      } else {
+        this.period = "夜里好！";
+      }
+    },
+    escapeStringHTML(str) {
+      if (!str) return;
+      str = str.replace(/&lt;/g, "<");
+      str = str.replace(/&gt;/g, ">");
+      return str.replace(/<[^>]+>/g, "");
+    },
+    handleJumpToComments(id) {
+      this.$router.replace(`/forum/comments/${id}`);
+    },
   }
 };
 </script>
@@ -368,5 +416,47 @@ export default {
 .margin-10 {
   margin: 10px 0;
 }
+.ico-font {
+  color: #409eff;
+  margin-right: 2px;
+}
+.userInfo > .el-row {
+  margin-bottom: 5px;
+}
+.userInfo .ico-aliemotion {
+  margin-right: 10px;
+}
 </style>
+<style lang="less">
+.bottom-ele-box {
+  .el-card__header {
+    padding: 0 10px;
+    line-height: 30px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.65);
+    .el-icon-more {
+      line-height: 30px;
+      float: right;
+      cursor: pointer;
+    }
+  }
+  .body-card {
+    .body-card-content {
+      padding: 5px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #fff;
+        cursor: pointer;
+      }
+      p:first-child:hover {
+        color: #ffd600;
+      }
+    }
+  }
+}
+</style>
+>
 

@@ -19,6 +19,9 @@
         @click="openDialogToAdd"
         v-if="this.curUserInfo.permission === 'admin'"
       >新 增</el-button>
+      <el-tooltip class="item" effect="dark" content="导出列表数据" placement="top-start">
+        <el-button type="primary" :loading="exporting" @click="exportData" style="float: none">导出数据</el-button>
+      </el-tooltip>
     </div>
     <el-table
       :data="seniorTeachersValueList"
@@ -174,7 +177,8 @@ export default {
         }
       ], // 用于遍历的学科数组
       _subjectOptions: [], // 副本，表格内学科字段格式化
-      multipleSelection: [] // 多选
+      multipleSelection: [], // 多选
+      exporting: false
     };
   },
   computed: {
@@ -335,6 +339,37 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    // export
+    exportData() {
+      this.exporting = true;
+      this.$confirm("是否将本页数据以excel形式表格导出?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          require.ensure([], () => {
+            const { export_json_to_excel } = require("vendor/Export2Excel");
+            const tHeader = ["姓名", "年龄", "性别", "电话", "教学学科"];
+            const filterVal = ["name", "age", "gender", "phone", "subject"];
+            const list = this.seniorTeachersList || [];
+            const data = this.formatJson(filterVal, list);
+            export_json_to_excel(tHeader, data, "教师列表数据");
+            this.exporting = false;
+            this.$notify({
+              type: "success",
+              message: "导出成功，请去本地查看"
+            });
+          });
+        })
+        .catch(() => {
+          this.exporting = false;
+        });
+    },
+    //将数组处理成索引数组
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

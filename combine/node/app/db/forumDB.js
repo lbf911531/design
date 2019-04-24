@@ -171,11 +171,33 @@ const addAdditionMsg = (params,handle) => {
   })
 }
 
+// 自上次登录时间起新的留言信息
+const getMsgListByTime = (params,handle) => {
+  pool.getConnection((err, conn) => {
+    if(err) {
+      handle(err);
+      return
+    } else {
+      const nowDate = new Date();
+      const year = nowDate.getFullYear();
+      const month = ("0" + (nowDate.getMonth() + 1 )).slice(-2);
+      const date = nowDate.getDate();
+      const curDate = `${year}-${month}-${date}`;
+      const sql = 'select * from forum_table where msgDate between ? and ?';
+      conn.query(sql,[params.msgDate,curDate], (error, results) => {
+        handle(error, results);
+      });
+    }
+    conn.release();
+  })
+}
+
 module.exports = {
   findAllMsg,
   saveMsg,
   addLikeNum,
   findLimitLenMsg,
   findAdditionMsg,
-  addAdditionMsg
+  addAdditionMsg,
+  getMsgListByTime
 };
