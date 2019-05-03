@@ -6,13 +6,15 @@ export default {
     msgList: [],
     msgLimitList: [],
     addMsgList: [], // 追加评论
-    curMsgObj: {}
+    curMsgObj: {},
+    limitDataMsg: {}
 	},
 	getters: {
     msgList: state => state.msgList,
     msgLimitList: state => state.msgLimitList,
     addMsgList: state => state.addMsgList,
-    curMsgObj: state => state.curMsgObj
+    curMsgObj: state => state.curMsgObj,
+    limitDataMsg: state => state.limitDataMsg
 	},
 	mutations: {
     changeForumMsgList(state,data) {
@@ -26,6 +28,9 @@ export default {
     },
     changeCurMsgObj(state,data) {
       state.curMsgObj = data;
+    },
+    changeMsgByLimitData(state,data) {
+      state.limitDataMsg = data;
     }
 	},
 	actions: {
@@ -118,5 +123,17 @@ export default {
           })
       });
     },
+    getMsgByLimitData(context,obj) {
+      return new Promise((resolve,reject)=>{
+        axios.get(`/forum/message/find/limit/login/time?userId=${obj.userId}&lastLoginTime=${obj.msgDate}`)
+          .then(({data})=>{
+            context.commit('changeMsgByLimitData',data);
+            resolve(data);
+          })
+          .catch((err)=>{
+            reject(err);
+          });
+   	  });
+    }
 	}
 }

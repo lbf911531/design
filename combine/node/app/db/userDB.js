@@ -7,7 +7,7 @@ const pool = require('./pool');
 const login = (params,handle) => {
 	pool.getConnection((err,conn) => {
 		if(!err) {
-			let sql = 'select id,name,gender,permission,user,phone,portraitUrl from user_table where user=? and password=?';
+			let sql = 'select id,name,gender,permission,user,phone,portraitUrl,lastLoginTime from user_table where user=? and password=?';
 			conn.query(sql,[params.user,params.password],function(err,results) {
 				handle(err,results);
 			});

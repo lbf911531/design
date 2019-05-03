@@ -122,6 +122,9 @@
         >
           <div slot="header" class="header-card">
             <span>RECENT POSTINGS</span>
+            <el-badge :value="msgLen">
+              <el-tag size="mini" closable style="margin-left: 10px" v-if="msgLen > 0">您有新的留言</el-tag>
+            </el-badge>
             <el-tooltip effect="dark" content="更多请点击左侧留言区" placement="top">
               <i class="el-icon-more"></i>
             </el-tooltip>
@@ -174,7 +177,7 @@ export default {
       dialogTableVisible: false,
       search: "",
       multipleSelection: [], // 多选
-      period: ""
+      period: "",
     };
   },
   components: {
@@ -186,9 +189,11 @@ export default {
     this.getCurUserById(id);
     this.findMsgLimitFive();
     this.renderTimePeriod();
+      const userObj = JSON.parse(window.sessionStorage.getItem('userInfo'));
+      this.getMsgByLimitData({userId: id, msgDate: userObj.lastLoginTime});
   },
   computed: {
-    ...mapGetters(["curUserInfo", "userCollection", "msgLimitList"]),
+    ...mapGetters(["curUserInfo", "userCollection", "msgLimitList",'limitDataMsg']),
     adminLength() {
       const adminArr = [];
       if (this.userCollection) {
@@ -224,6 +229,12 @@ export default {
           } else return false;
         })
       );
+    },
+     msgLen() {
+      if(this.limitDataMsg && this.limitDataMsg.len) {
+        const len = this.limitDataMsg.len;
+        return len;
+      }
     }
   },
   mounted() {},
@@ -232,7 +243,8 @@ export default {
       "getUserCollection",
       "batchAssignPer",
       "getCurUserById",
-      "findMsgLimitFive"
+      "findMsgLimitFive",
+      "getMsgByLimitData"
     ]),
     // 查询所有用户
     findUserCollection() {
@@ -431,13 +443,16 @@ export default {
 .bottom-ele-box {
   .el-card__header {
     padding: 0 10px;
-    line-height: 30px;
-    height: 30px;
+    line-height: 40px;
+    height: 40px;
     background-color: rgba(0, 0, 0, 0.65);
     .el-icon-more {
-      line-height: 30px;
+      line-height: 40px;
       float: right;
       cursor: pointer;
+    }
+    .el-badge__content{
+      top: 10px;
     }
   }
   .body-card {

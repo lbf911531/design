@@ -25,7 +25,7 @@ const findAllMsg = handle => {
       return
     }
     // let sql = 'select * from forum_table order by msgDate DESC,id DESC';
-    const sql = 'SELECT a.id,a.userName,a.msg,a.likeNum,a.msgDate,b.portraitUrl FROM forum_table AS a LEFT JOIN user_table AS b ON a.userId=b.id order by a.msgDate DESC, a.id DESC';
+    const sql = 'SELECT a.id,a.userName,a.msg,a.likeNum,a.msgDate,b.portraitUrl,b.user,b.gender,b.phone FROM forum_table AS a LEFT JOIN user_table AS b ON a.userId=b.id order by a.msgDate DESC, a.id DESC';
     conn.query(sql, [], function(err,results) {
       handle(err,results);
     });
@@ -177,15 +177,26 @@ const getMsgListByTime = (params,handle) => {
     if(err) {
       handle(err);
       return
+    } else if(!params.lastLoginTime) {
+      handle(true, []);
+      return;
     } else {
       const nowDate = new Date();
       const year = nowDate.getFullYear();
       const month = ("0" + (nowDate.getMonth() + 1 )).slice(-2);
       const date = nowDate.getDate();
       const curDate = `${year}-${month}-${date}`;
-      const sql = 'select * from forum_table where msgDate between ? and ?';
-      conn.query(sql,[params.msgDate,curDate], (error, results) => {
-        handle(error, results);
+      const sql = 'select * from forum_table where msgDate between ? and ? and userId != ? ';
+      conn.query(sql,[params.lastLoginTime,curDate,params.userId], (error, results) => {
+        if(error) {
+          handle(error,false);
+          return;
+        }
+        // 更新用户登录时间
+        const sql2 = 'update user_table set lastLoginTime = ? where id = ?';
+        conn.query(sql2,[curDate,params.userId],(errors, result)=> {
+          handle(errors, results);
+        });
       });
     }
     conn.release();

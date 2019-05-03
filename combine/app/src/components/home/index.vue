@@ -82,7 +82,7 @@
       </div>
     </div>
     <div class="foot-copy">曾记同窗日月酣，未忘分道梦魂憨。</div>
-    <el-dialog class="portrait-card-box" width="30%" title="头像" :visible.sync="imgBoxVisible">
+    <el-dialog class="portrait-card-box" width="30%" title="头像" :visible.sync="imgBoxVisible" :before-close="handleCloseImgBox">
       <img
         :src="item"
         v-for="(item,index) in portraitArr"
@@ -90,6 +90,17 @@
         :key="item"
         @click="handleSelectImg(index)"
       >
+      <el-upload
+        class="avatar-uploader"
+        action="http://127.0.0.1:3000/img/uploading"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+        name="photo"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
     </el-dialog>
   </div>
 </template>
@@ -200,6 +211,7 @@ export default {
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
     },
+    // 校验图片
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
@@ -211,6 +223,11 @@ export default {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
+    },
+    // 关闭头像对话框
+    handleCloseImgBox(done) {
+      this.imageUrl = '';
+      done();
     }
   }
 };
@@ -362,6 +379,31 @@ div {
   .el-dialog__header,
   .el-dialog__body {
     background-color: rgba(0, 0, 0, 0.05);
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      left: 50%;
+      transform: translate(-50%);
+      &:hover {
+        border-color: #409eff;
+      }
+      .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 148px;
+        height: 148px;
+        line-height: 148px;
+        text-align: center;
+      }
+      .avatar {
+        width: 148px;
+        height: 148px;
+        display: block;
+      }
+    }
   }
 }
 </style>

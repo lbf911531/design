@@ -9,6 +9,7 @@
         <el-button slot="append" icon="el-icon-search"></el-button>
       </el-input>
       <el-button type="primary" icon="el-icon-message" size="small" @click="dialogVisible=true">留言</el-button>
+      <el-button type="primary" size="small" @click="tableVisble=true" style="margin-right: 20px">统计活跃人数</el-button>
     </div>
     <div class="forum-content">
       <el-card class="box-card" shadow="hover" v-for="msgItem in filterMsgList" :key="msgItem.id">
@@ -63,14 +64,19 @@
         <el-button type="primary" @click="handleAddMsg">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog :visible.sync="tableVisble" title="最活跃三人与总留言数百分比">
+      <CTable :message="msgList"></CTable>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
 import moment from "moment";
+import CTable from '@/components/forum/table.vue';
 
 export default {
+  components: { CTable },
   data() {
     return {
       dialogVisible: false,
@@ -82,6 +88,7 @@ export default {
       pageSize: 5,
       total: 0,
       currentPage: 1,
+      tableVisble: false
     };
   },
   created() {
@@ -104,6 +111,7 @@ export default {
       } else return false;
     }
   },
+
   methods: {
     ...mapActions(["findAllForumMsg", "saveForumMsg", "addForumMsgLikeNum"]),
     // 查询

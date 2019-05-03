@@ -73,12 +73,12 @@ forumRouter.post("/message/comments/save", (req, resp) => {
 });
 
 forumRouter.get("/message/find/limit/login/time",(req, resp) => {
-  const params = req.body;
+  const params = req.query;
   forumDB.getMsgListByTime(params, (err ,results) => {
     if(err) {
       resp.send(err);
     } else {
-      resp.send(200).send({len: results.length});
+      resp.status(200).send({len: results.length});
     }
   })
 })
