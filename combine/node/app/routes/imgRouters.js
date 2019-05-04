@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '../static/images'));
   },
   filename: function(req, file, cb) {
-    cb(null, `${Date.now()}-${Math.random() * 179}-${file.originalname}`);
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 const upload = multer({ storage: storage });
@@ -20,6 +20,7 @@ imgRoute.post("/uploading", upload.single('photo'), (req, res, next) => {
   res.send({
     message: '上传成功',
     errno: 0,
+    status: 200,
     path:photoPath,
   });
 });

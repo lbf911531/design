@@ -82,7 +82,13 @@
       </div>
     </div>
     <div class="foot-copy">曾记同窗日月酣，未忘分道梦魂憨。</div>
-    <el-dialog class="portrait-card-box" width="30%" title="头像" :visible.sync="imgBoxVisible" :before-close="handleCloseImgBox">
+    <el-dialog
+      class="portrait-card-box"
+      width="30%"
+      title="头像"
+      :visible.sync="imgBoxVisible"
+      :before-close="handleCloseImgBox"
+    >
       <img
         :src="item"
         v-for="(item,index) in portraitArr"
@@ -179,10 +185,10 @@ export default {
         this.curTime = moment(Date.now()).format("YYYY-MM-DD dddd HH:mm:ss");
       }, 1000);
     },
-    handleSelectImg(index) {
+    handleSelectImg(index, imgUrl) {
       const userId = window.sessionStorage.getItem("userId");
       const params = {
-        portraitUrl: this.portraitArr[index],
+        portraitUrl: imgUrl || this.portraitArr[index],
         id: userId
       };
       this.changePortraitUrl(params)
@@ -209,7 +215,24 @@ export default {
     },
     // ----
     handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+      if (res.status === 200) {
+        this.$message.success(res.message);
+        this.imageUrl = URL.createObjectURL(file.raw);
+        setTimeout(() => {
+          this.$confirm("是否将其作为头像？", "确认信息", {
+            distinguishCancelAndClose: true,
+            confirmButtonText: "保存",
+            cancelButtonText: "放弃"
+          })
+            .then(() => {
+              this.handleSelectImg(0, this.imageUrl);
+              this.imageUrl = "";
+            })
+            .catch(() => {
+              this.imageUrl = "";
+            });
+        }, 1000);
+      }
     },
     // 校验图片
     beforeAvatarUpload(file) {
@@ -226,7 +249,7 @@ export default {
     },
     // 关闭头像对话框
     handleCloseImgBox(done) {
-      this.imageUrl = '';
+      this.imageUrl = "";
       done();
     }
   }
