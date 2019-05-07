@@ -184,9 +184,9 @@ const getMsgListByTime = (params,handle) => {
       const nowDate = new Date();
       const year = nowDate.getFullYear();
       const month = ("0" + (nowDate.getMonth() + 1 )).slice(-2);
-      const date = nowDate.getDate();
+      const date = ("0" + (nowDate.getDate())).slice(-2);
       const curDate = `${year}-${month}-${date}`;
-      const sql = 'select * from forum_table where msgDate between ? and ? and userId != ? ';
+      const sql = 'select * from forum_table where msgDate between ? and ? and userId != ?';
       conn.query(sql,[params.lastLoginTime,curDate,params.userId], (error, results) => {
         if(error) {
           handle(error,false);

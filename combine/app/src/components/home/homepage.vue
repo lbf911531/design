@@ -122,8 +122,8 @@
         >
           <div slot="header" class="header-card">
             <span>RECENT POSTINGS</span>
-            <el-badge :value="msgLen">
-              <el-tag size="mini" closable style="margin-left: 10px" v-if="msgLen > 0">您有新的留言</el-tag>
+            <el-badge :value="msgLen" v-if="msgLen">
+              <el-tag size="mini" closable style="margin-left: 10px" v-if="msgLen">您有新的留言</el-tag>
             </el-badge>
             <el-tooltip effect="dark" content="更多请点击左侧留言区" placement="top">
               <i class="el-icon-more"></i>
@@ -189,8 +189,8 @@ export default {
     this.getCurUserById(id);
     this.findMsgLimitFive();
     this.renderTimePeriod();
-      const userObj = JSON.parse(window.sessionStorage.getItem('userInfo'));
-      this.getMsgByLimitData({userId: id, msgDate: userObj.lastLoginTime});
+    const userObj = JSON.parse(window.sessionStorage.getItem('userInfo'));
+    this.getMsgByLimitData({userId: id, msgDate: userObj.lastLoginTime});
   },
   computed: {
     ...mapGetters(["curUserInfo", "userCollection", "msgLimitList",'limitDataMsg']),
@@ -230,11 +230,8 @@ export default {
         })
       );
     },
-     msgLen() {
-      if(this.limitDataMsg && this.limitDataMsg.len) {
-        const len = this.limitDataMsg.len;
-        return len;
-      }
+    msgLen() {
+      return this.limitDataMsg.len || 0;
     }
   },
   mounted() {},
